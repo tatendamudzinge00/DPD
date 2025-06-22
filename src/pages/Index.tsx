@@ -7,6 +7,7 @@ import { SectorOverview } from "@/components/SectorOverview";
 import { ThreatMap } from "@/components/ThreatMap";
 import { ThreatIntelligence } from "@/components/ThreatIntelligence";
 import { IncidentTracker } from "@/components/IncidentTracker";
+import { FeatureRequirements } from "@/components/FeatureRequirements";
 import { SectorDetail } from "@/components/SectorDetail";
 
 export type SectorType = 'government' | 'banking' | 'private' | 'education' | 'industrial' | 'telecoms' | 'health' | 'energy' | 'transport' | 'media' | 'overview';
@@ -34,7 +35,10 @@ const Index = () => {
                     <ThreatMap />
                     <ThreatIntelligence />
                   </div>
-                  <IncidentTracker />
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                    <IncidentTracker />
+                    <FeatureRequirements />
+                  </div>
                 </>
               ) : (
                 <SectorDetail sector={activeSector} />

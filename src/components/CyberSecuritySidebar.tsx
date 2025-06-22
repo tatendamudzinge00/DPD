@@ -52,7 +52,7 @@ export function CyberSecuritySidebar({ activeSector, setActiveSector, userRole }
         <div className="flex items-center space-x-2">
           <Shield className="h-8 w-8 text-blue-400" />
           <div>
-            <h1 className="text-lg font-bold text-white">ZW CyberSOC</h1>
+            <h1 className="text-lg font-bold text-white">Data Protection Dashboard</h1>
             <p className="text-xs text-slate-400">National Cyber Security Operations Center</p>
           </div>
         </div>
