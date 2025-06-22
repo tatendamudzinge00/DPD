@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +13,7 @@ export function SectorDetail({ sector }: SectorDetailProps) {
   const sectorData = {
     government: {
       name: 'Government Sector',
-      description: 'National government ministries, departments, and agencies',
+      description: 'National government ministries, departments, and parastatals',
       threatLevel: 'critical',
       activeThreats: 23,
       protectionScore: 89,
@@ -34,15 +33,22 @@ export function SectorDetail({ sector }: SectorDetailProps) {
         'State-sponsored Attacks'
       ],
       organizations: [
-        'Office of the President',
-        'Ministry of Finance',
-        'Zimbabwe Revenue Authority',
-        'Central Intelligence Organization'
+        'Office of the President and Cabinet (OPC)',
+        'Ministry of Finance and Economic Development',
+        'Zimbabwe Revenue Authority (ZIMRA)',
+        'Ministry of Home Affairs',
+        'Ministry of Defence',
+        'Ministry of ICT, Postal and Courier Services',
+        'Registrar General\'s Office',
+        'Zimbabwe Electoral Commission (ZEC)',
+        'Public Service Commission (PSC)',
+        'Central Intelligence Organisation (CIO)',
+        'Zimbabwe National Statistics Agency (ZIMSTAT)'
       ]
     },
     banking: {
       name: 'Banking & Finance Sector',
-      description: 'Commercial banks, microfinance, and financial institutions',
+      description: 'Commercial banks, central bank, microfinance, fintechs',
       threatLevel: 'high',
       activeThreats: 18,
       protectionScore: 95,
@@ -62,10 +68,283 @@ export function SectorDetail({ sector }: SectorDetailProps) {
         'Business Email Compromise'
       ],
       organizations: [
-        'Reserve Bank of Zimbabwe',
-        'Commercial Bank of Zimbabwe',
+        'Reserve Bank of Zimbabwe (RBZ)',
+        'CBZ Holdings',
         'Stanbic Bank Zimbabwe',
-        'Ecocash Holdings'
+        'Ecobank Zimbabwe',
+        'BancABC',
+        'FBC Bank',
+        'Steward Bank',
+        'POSB (People\'s Own Savings Bank)',
+        'NMB Bank',
+        'ZB Bank',
+        'EcoCash (Econet Financial Services)',
+        'ZIMSWITCH',
+        'Financial Intelligence Unit (FIU)'
+      ]
+    },
+    private: {
+      name: 'Private Sector',
+      description: 'Corporations, insurance, retail, tech, logistics',
+      threatLevel: 'medium',
+      activeThreats: 12,
+      protectionScore: 82,
+      totalAssets: 134,
+      criticalAssets: 28,
+      recentIncidents: 5,
+      keyMetrics: [
+        { label: 'Endpoint Protection', value: 85, status: 'medium' },
+        { label: 'Data Loss Prevention', value: 79, status: 'poor' },
+        { label: 'Network Monitoring', value: 88, status: 'medium' },
+        { label: 'Incident Response', value: 91, status: 'good' }
+      ],
+      topThreats: [
+        'Ransomware Attacks',
+        'Business Email Compromise',
+        'Supply Chain Attacks',
+        'Insider Threats'
+      ],
+      organizations: [
+        'Delta Corporation',
+        'Econet Wireless Zimbabwe',
+        'Innscor Africa',
+        'Old Mutual Zimbabwe',
+        'Doves Holdings',
+        'Cassava Smartech',
+        'First Mutual Holdings',
+        'OK Zimbabwe',
+        'Seed Co International',
+        'Freight World',
+        'Mahomed Mussa Wholesalers'
+      ]
+    },
+    education: {
+      name: 'Education Sector',
+      description: 'Universities, colleges, regulatory authorities',
+      threatLevel: 'low',
+      activeThreats: 6,
+      protectionScore: 76,
+      totalAssets: 89,
+      criticalAssets: 22,
+      recentIncidents: 2,
+      keyMetrics: [
+        { label: 'Student Data Protection', value: 82, status: 'medium' },
+        { label: 'Research Data Security', value: 74, status: 'poor' },
+        { label: 'Network Infrastructure', value: 78, status: 'poor' },
+        { label: 'Access Management', value: 85, status: 'medium' }
+      ],
+      topThreats: [
+        'Data Breaches',
+        'Phishing Campaigns',
+        'Unauthorized Access',
+        'Research Data Theft'
+      ],
+      organizations: [
+        'University of Zimbabwe (UZ)',
+        'Midlands State University (MSU)',
+        'National University of Science and Technology (NUST)',
+        'Zimbabwe Open University (ZOU)',
+        'Harare Institute of Technology (HIT)',
+        'Zimbabwe Council for Higher Education (ZIMCHE)',
+        'Zimbabwe School Examinations Council (ZIMSEC)',
+        'Teachers colleges and vocational training centers',
+        'Bindura University of Science Education',
+        'Great Zimbabwe University'
+      ]
+    },
+    industrial: {
+      name: 'Industrial & Mining Sector',
+      description: 'Heavy industry, mining corporations, manufacturing',
+      threatLevel: 'medium',
+      activeThreats: 14,
+      protectionScore: 84,
+      totalAssets: 67,
+      criticalAssets: 31,
+      recentIncidents: 4,
+      keyMetrics: [
+        { label: 'SCADA Security', value: 87, status: 'medium' },
+        { label: 'Industrial Control Systems', value: 91, status: 'good' },
+        { label: 'Physical Security Integration', value: 89, status: 'medium' },
+        { label: 'Network Segmentation', value: 85, status: 'medium' }
+      ],
+      topThreats: [
+        'Industrial Espionage',
+        'SCADA/ICS Attacks',
+        'Supply Chain Compromises',
+        'Physical-Cyber Convergence Attacks'
+      ],
+      organizations: [
+        'Zimplats',
+        'Hwange Colliery Company',
+        'Zimbabwe Mining Development Corporation (ZMDC)',
+        'Mimosa Mining Company',
+        'RioZim Limited',
+        'Lafarge Cement Zimbabwe',
+        'Sino Zimbabwe Cement Company',
+        'Dairibord Zimbabwe',
+        'National Railways of Zimbabwe (NRZ)'
+      ]
+    },
+    telecoms: {
+      name: 'Telecoms & ICT Sector',
+      description: 'ISPs, telecom providers, ICT regulators',
+      threatLevel: 'high',
+      activeThreats: 21,
+      protectionScore: 92,
+      totalAssets: 78,
+      criticalAssets: 42,
+      recentIncidents: 6,
+      keyMetrics: [
+        { label: 'Network Infrastructure Security', value: 94, status: 'good' },
+        { label: 'Customer Data Protection', value: 90, status: 'good' },
+        { label: 'Service Availability', value: 96, status: 'good' },
+        { label: 'Regulatory Compliance', value: 88, status: 'medium' }
+      ],
+      topThreats: [
+        'DDoS Attacks',
+        'Network Infrastructure Attacks',
+        'SIM Swapping',
+        'Customer Data Breaches'
+      ],
+      organizations: [
+        'POTRAZ (Postal and Telecommunications Regulatory Authority)',
+        'NetOne Cellular',
+        'Econet Wireless Zimbabwe',
+        'TelOne',
+        'Liquid Intelligent Technologies Zimbabwe',
+        'Telecel Zimbabwe',
+        'Utande Internet Services',
+        'Africom'
+      ]
+    },
+    health: {
+      name: 'Health Sector',
+      description: 'Public hospitals, pharma, regulators',
+      threatLevel: 'medium',
+      activeThreats: 9,
+      protectionScore: 81,
+      totalAssets: 95,
+      criticalAssets: 38,
+      recentIncidents: 3,
+      keyMetrics: [
+        { label: 'Patient Data Protection', value: 86, status: 'medium' },
+        { label: 'Medical Device Security', value: 78, status: 'poor' },
+        { label: 'Healthcare Records Security', value: 83, status: 'medium' },
+        { label: 'Regulatory Compliance', value: 89, status: 'medium' }
+      ],
+      topThreats: [
+        'Healthcare Data Breaches',
+        'Medical Device Compromises',
+        'Ransomware Attacks',
+        'Patient Record Theft'
+      ],
+      organizations: [
+        'Ministry of Health and Child Care',
+        'Parirenyatwa Group of Hospitals',
+        'Sally Mugabe Hospital',
+        'National AIDS Council (NAC)',
+        'NatPharm (National Pharmaceutical Company)',
+        'Health Services Board',
+        'Mpilo Central Hospital',
+        'Medicines Control Authority of Zimbabwe (MCAZ)'
+      ]
+    },
+    energy: {
+      name: 'Energy Sector',
+      description: 'Energy utilities, regulators, rural energy development',
+      threatLevel: 'high',
+      activeThreats: 19,
+      protectionScore: 87,
+      totalAssets: 52,
+      criticalAssets: 35,
+      recentIncidents: 7,
+      keyMetrics: [
+        { label: 'Grid Security', value: 89, status: 'medium' },
+        { label: 'SCADA Protection', value: 91, status: 'good' },
+        { label: 'Critical Infrastructure', value: 94, status: 'good' },
+        { label: 'Incident Response', value: 86, status: 'medium' }
+      ],
+      topThreats: [
+        'Critical Infrastructure Attacks',
+        'Power Grid Disruptions',
+        'Industrial Control System Attacks',
+        'Nation-State Threats'
+      ],
+      organizations: [
+        'Zimbabwe Electricity Supply Authority (ZESA)',
+        'Zimbabwe Power Company (ZPC)',
+        'ZETDC (Zimbabwe Electricity Transmission & Distribution)',
+        'Rural Electrification Agency (REA)',
+        'Zimbabwe Energy Regulatory Authority (ZERA)',
+        'GreenFuel',
+        'Hwange Power Station',
+        'Kariba Hydro Power Station'
+      ]
+    },
+    transport: {
+      name: 'Transport Sector',
+      description: 'Air, rail, road, logistics, and traffic agencies',
+      threatLevel: 'low',
+      activeThreats: 7,
+      protectionScore: 79,
+      totalAssets: 43,
+      criticalAssets: 18,
+      recentIncidents: 2,
+      keyMetrics: [
+        { label: 'Traffic Management Systems', value: 82, status: 'medium' },
+        { label: 'Aviation Security', value: 88, status: 'medium' },
+        { label: 'Rail Network Security', value: 75, status: 'poor' },
+        { label: 'Logistics Security', value: 81, status: 'medium' }
+      ],
+      topThreats: [
+        'Transportation System Disruptions',
+        'GPS Spoofing',
+        'Cargo Tracking Compromises',
+        'Aviation System Attacks'
+      ],
+      organizations: [
+        'Ministry of Transport and Infrastructural Development',
+        'Zimbabwe National Roads Administration (ZINARA)',
+        'Civil Aviation Authority of Zimbabwe (CAAZ)',
+        'National Railways of Zimbabwe (NRZ)',
+        'Vehicle Inspection Department (VID)',
+        'Traffic Safety Council of Zimbabwe',
+        'Air Zimbabwe'
+      ]
+    },
+    media: {
+      name: 'Media Sector',
+      description: 'Public and private media houses, online platforms',
+      threatLevel: 'low',
+      activeThreats: 5,
+      protectionScore: 74,
+      totalAssets: 38,
+      criticalAssets: 12,
+      recentIncidents: 1,
+      keyMetrics: [
+        { label: 'Content Management Security', value: 76, status: 'poor' },
+        { label: 'Broadcasting Infrastructure', value: 82, status: 'medium' },
+        { label: 'Digital Platform Security', value: 78, status: 'poor' },
+        { label: 'Information Integrity', value: 85, status: 'medium' }
+      ],
+      topThreats: [
+        'Website Defacements',
+        'Misinformation Campaigns',
+        'Broadcasting Disruptions',
+        'Content Management Breaches'
+      ],
+      organizations: [
+        'Zimbabwe Broadcasting Corporation (ZBC)',
+        'The Herald (Zimpapers)',
+        'NewsDay Zimbabwe',
+        'Daily News Zimbabwe',
+        '263Chat',
+        'Nehanda Radio',
+        'Techzim',
+        'Sunday Mail',
+        'ZiFM Stereo',
+        'Star FM',
+        'Voice of Zimbabwe'
       ]
     }
   };
@@ -196,21 +475,24 @@ export function SectorDetail({ sector }: SectorDetailProps) {
         </Card>
 
         {/* Key Organizations */}
-        <Card className="bg-slate-800 border-slate-700 lg:col-span-2">
+        <Card className="bg-slate-800 border-slate-700">
           <CardHeader>
             <CardTitle className="text-white flex items-center space-x-2">
               <Building2 className="h-5 w-5" />
-              <span>Key Organizations in Sector</span>
+              <span>Key Organizations in Sector ({currentSector.organizations.length})</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {currentSector.organizations.map((org, index) => (
-                <div key={index} className="bg-slate-700 rounded-lg p-4 text-center">
-                  <div className="text-white font-semibold mb-2">{org}</div>
-                  <Badge variant="outline" className="text-xs text-slate-300 border-slate-600">
-                    Protected
-                  </Badge>
+                <div key={index} className="bg-slate-700 rounded-lg p-4 hover:bg-slate-600 transition-colors">
+                  <div className="text-white font-semibold mb-2 text-sm leading-relaxed">{org}</div>
+                  <div className="flex items-center justify-between">
+                    <Badge variant="outline" className="text-xs text-green-300 border-green-600">
+                      Protected
+                    </Badge>
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  </div>
                 </div>
               ))}
             </div>
