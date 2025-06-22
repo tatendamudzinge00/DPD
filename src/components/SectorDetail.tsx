@@ -1,15 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 import { SectorType } from "@/pages/Index";
-import { AlertTriangle, Shield, Users, Activity, TrendingUp, Building2 } from "lucide-react";
+import { AlertTriangle, Shield, Users, Activity, TrendingUp, Building2, MapPin, Clock, BarChart3 } from "lucide-react";
+import { OrganizationDashboard } from "./OrganizationDashboard";
 
 interface SectorDetailProps {
   sector: SectorType;
 }
 
 export function SectorDetail({ sector }: SectorDetailProps) {
+  const [selectedOrganization, setSelectedOrganization] = useState<string | null>(null);
+  const [selectedTimeframe, setSelectedTimeframe] = useState<'24h' | '7d' | '30d'>('7d');
+
   const sectorData = {
     government: {
       name: 'Government Sector',
@@ -351,6 +356,17 @@ export function SectorDetail({ sector }: SectorDetailProps) {
 
   const currentSector = sectorData[sector as keyof typeof sectorData] || sectorData.government;
 
+  // If an organization is selected, show the organization dashboard
+  if (selectedOrganization) {
+    return (
+      <OrganizationDashboard 
+        organizationName={selectedOrganization}
+        sector={currentSector.name}
+        onBack={() => setSelectedOrganization(null)}
+      />
+    );
+  }
+
   const getMetricColor = (status: string) => {
     switch (status) {
       case 'good': return 'text-green-400';
@@ -372,14 +388,20 @@ export function SectorDetail({ sector }: SectorDetailProps) {
 
   return (
     <div className="space-y-6">
+      {/* Sector Summary Header */}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold text-white mb-2">{currentSector.name}</h2>
           <p className="text-slate-300">{currentSector.description}</p>
         </div>
-        <Badge variant="outline" className={`${getThreatLevelColor(currentSector.threatLevel)} text-white border-0`}>
-          {currentSector.threatLevel.toUpperCase()} THREAT LEVEL
-        </Badge>
+        <div className="flex items-center space-x-4">
+          <Badge variant="outline" className={`${getThreatLevelColor(currentSector.threatLevel)} text-white border-0`}>
+            {currentSector.threatLevel.toUpperCase()} THREAT LEVEL
+          </Badge>
+          <div className="text-xs text-slate-400">
+            Last Updated: 2025-06-22 14:30:00
+          </div>
+        </div>
       </div>
 
       {/* Overview Cards */}
@@ -438,7 +460,7 @@ export function SectorDetail({ sector }: SectorDetailProps) {
         {/* Security Metrics */}
         <Card className="bg-slate-800 border-slate-700">
           <CardHeader>
-            <CardTitle className="text-white">Security Metrics</CardTitle>
+            <CardTitle className="text-white">Security Metrics Breakdown</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {currentSector.keyMetrics.map((metric, index) => (
@@ -474,8 +496,79 @@ export function SectorDetail({ sector }: SectorDetailProps) {
           </CardContent>
         </Card>
 
-        {/* Key Organizations */}
+        {/* Time-Series Trends */}
         <Card className="bg-slate-800 border-slate-700">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <BarChart3 className="h-5 w-5" />
+                <span>Threat Trends</span>
+              </div>
+              <div className="flex space-x-2">
+                {(['24h', '7d', '30d'] as const).map((timeframe) => (
+                  <Button
+                    key={timeframe}
+                    size="sm"
+                    variant={selectedTimeframe === timeframe ? "default" : "outline"}
+                    onClick={() => setSelectedTimeframe(timeframe)}
+                    className="text-xs"
+                  >
+                    {timeframe}
+                  </Button>
+                ))}
+              </div>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="h-32 bg-slate-700 rounded-lg flex items-center justify-center">
+                <span className="text-slate-400">Threat count trend chart ({selectedTimeframe})</span>
+              </div>
+              <div className="grid grid-cols-3 gap-4 text-sm">
+                <div className="text-center">
+                  <div className="text-slate-400">Avg Response Time</div>
+                  <div className="text-white font-semibold">24 min</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-slate-400">Peak Threats</div>
+                  <div className="text-white font-semibold">14:30</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-slate-400">Trend</div>
+                  <div className="text-green-400 font-semibold">Improving</div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Geo-Map Placeholder */}
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center space-x-2">
+              <MapPin className="h-5 w-5" />
+              <span>Geographic Distribution</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-48 bg-slate-700 rounded-lg flex items-center justify-center">
+              <span className="text-slate-400">Province-level threat heatmap</span>
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                <span className="text-slate-300">Harare (Critical)</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                <span className="text-slate-300">Bulawayo (Medium)</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Key Organizations */}
+        <Card className="bg-slate-800 border-slate-700 lg:col-span-2">
           <CardHeader>
             <CardTitle className="text-white flex items-center space-x-2">
               <Building2 className="h-5 w-5" />
@@ -485,13 +578,20 @@ export function SectorDetail({ sector }: SectorDetailProps) {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {currentSector.organizations.map((org, index) => (
-                <div key={index} className="bg-slate-700 rounded-lg p-4 hover:bg-slate-600 transition-colors">
+                <div 
+                  key={index} 
+                  className="bg-slate-700 rounded-lg p-4 hover:bg-slate-600 transition-colors cursor-pointer"
+                  onClick={() => setSelectedOrganization(org)}
+                >
                   <div className="text-white font-semibold mb-2 text-sm leading-relaxed">{org}</div>
                   <div className="flex items-center justify-between">
                     <Badge variant="outline" className="text-xs text-green-300 border-green-600">
                       Protected
                     </Badge>
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <Clock className="h-3 w-3 text-slate-400" />
+                    </div>
                   </div>
                 </div>
               ))}
