@@ -1,68 +1,96 @@
 
 import React from 'react';
-import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AlertTriangle, Shield, Clock } from "lucide-react";
+import { Shield, Bell, Settings, User, FileText } from "lucide-react";
 
 interface DashboardHeaderProps {
-  userRole: string;
+  userRole: 'admin' | 'analyst' | 'sector-lead';
   setUserRole: (role: 'admin' | 'analyst' | 'sector-lead') => void;
+  onShowEnhancedIncidents?: () => void;
+  showEnhancedIncidents?: boolean;
 }
 
-export function DashboardHeader({ userRole, setUserRole }: DashboardHeaderProps) {
-  const currentTime = new Date().toLocaleString('en-GB', {
-    timeZone: 'Africa/Harare',
-    hour12: false,
-    day: '2-digit',
-    month: '2-digit', 
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
+export function DashboardHeader({ 
+  userRole, 
+  setUserRole, 
+  onShowEnhancedIncidents,
+  showEnhancedIncidents 
+}: DashboardHeaderProps) {
+  const roleDisplayNames = {
+    admin: 'System Administrator',
+    analyst: 'Security Analyst',
+    'sector-lead': 'Sector Lead'
+  };
 
   return (
-    <header className="bg-slate-900 border-b border-slate-800 px-6 py-4">
+    <header className="bg-slate-800 border-b border-slate-700 p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <SidebarTrigger className="text-slate-300 hover:text-white" />
-          <div className="flex items-center space-x-6">
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-sm text-slate-300">System Operational</span>
+          <div className="flex items-center space-x-2">
+            <Shield className="h-6 w-6 text-blue-400" />
+            <div>
+              <h1 className="text-lg font-bold text-white">ZIMCERT Dashboard</h1>
+              <p className="text-xs text-slate-400">National Cyber Security Operations</p>
             </div>
-            <Badge variant="destructive" className="flex items-center space-x-1">
-              <AlertTriangle className="h-3 w-3" />
-              <span>12 Active Threats</span>
-            </Badge>
-            <Badge variant="secondary" className="flex items-center space-x-1">
-              <Shield className="h-3 w-3" />
-              <span>247 Protected Assets</span>
-            </Badge>
           </div>
         </div>
-        
+
         <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2 text-slate-300">
-            <Clock className="h-4 w-4" />
-            <span className="text-sm">{currentTime} CAT</span>
+          {onShowEnhancedIncidents && (
+            <Button
+              variant={showEnhancedIncidents ? "default" : "outline"}
+              size="sm"
+              onClick={onShowEnhancedIncidents}
+              className={showEnhancedIncidents ? "" : "border-slate-600 text-slate-300"}
+            >
+              <FileText className="h-4 w-4 mr-2" />
+              Enhanced Incidents
+            </Button>
+          )}
+
+          <div className="flex items-center space-x-2">
+            <Badge variant="outline" className="text-slate-300 border-slate-600">
+              <User className="h-3 w-3 mr-1" />
+              {roleDisplayNames[userRole]}
+            </Badge>
           </div>
-          
-          <Select value={userRole} onValueChange={setUserRole}>
-            <SelectTrigger className="w-40 bg-slate-800 border-slate-700 text-white">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-slate-700">
-              <SelectItem value="admin" className="text-white">Admin</SelectItem>
-              <SelectItem value="analyst" className="text-white">Analyst</SelectItem>
-              <SelectItem value="sector-lead" className="text-white">Sector Lead</SelectItem>
-            </SelectContent>
-          </Select>
-          
-          <Button variant="outline" size="sm" className="border-slate-600 text-slate-300 hover:text-white">
-            Emergency Protocol
-          </Button>
+
+          <div className="flex items-center space-x-1">
+            <Button
+              variant={userRole === 'admin' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setUserRole('admin')}
+              className="text-xs"
+            >
+              Admin
+            </Button>
+            <Button
+              variant={userRole === 'analyst' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setUserRole('analyst')}
+              className="text-xs"
+            >
+              Analyst
+            </Button>
+            <Button
+              variant={userRole === 'sector-lead' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setUserRole('sector-lead')}
+              className="text-xs"
+            >
+              Sector Lead
+            </Button>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Button variant="ghost" size="sm" className="text-slate-300">
+              <Bell className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="sm" className="text-slate-300">
+              <Settings className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
     </header>
