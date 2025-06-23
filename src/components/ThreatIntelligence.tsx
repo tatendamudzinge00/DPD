@@ -3,61 +3,47 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { AlertTriangle, Shield, Activity, Clock } from "lucide-react";
+import { AlertTriangle, Shield, Activity, Clock, Loader2 } from "lucide-react";
+import { useThreatIntelligence } from "../hooks/useApiData";
 
 export function ThreatIntelligence() {
-  const threats = [
+  const { data: threats = [], isLoading, error } = useThreatIntelligence();
+
+  // Fallback to mock data if API fails
+  const mockThreats = [
     {
-      id: 1,
+      id: '1',
       type: 'APT Campaign',
-      severity: 'critical',
+      severity: 'critical' as const,
       target: 'Government Sector',
       description: 'Sophisticated phishing campaign targeting ministry email systems',
-      time: '15 min ago',
+      timestamp: new Date(Date.now() - 15 * 60000).toISOString(),
       source: 'CERT-ZW',
       iocs: ['malicious-domain.zw', '192.168.1.100']
     },
     {
-      id: 2,
+      id: '2',
       type: 'Ransomware',
-      severity: 'high',
+      severity: 'high' as const,
       target: 'Banking Sector',
       description: 'New ransomware variant detected in banking infrastructure',
-      time: '2 hours ago',
+      timestamp: new Date(Date.now() - 2 * 60 * 60000).toISOString(),
       source: 'RBZ Alert',
       iocs: ['trojan.exe', 'encrypt.dll']
     },
     {
-      id: 3,
+      id: '3',
       type: 'DDoS Attack',
-      severity: 'medium',
+      severity: 'medium' as const,
       target: 'Telecoms',
       description: 'Distributed denial of service attack on telecom infrastructure',
-      time: '4 hours ago',
+      timestamp: new Date(Date.now() - 4 * 60 * 60000).toISOString(),
       source: 'NetOne SOC',
       iocs: ['botnet-c2.com', '203.45.67.89']
-    },
-    {
-      id: 4,
-      type: 'Data Breach',
-      severity: 'high',
-      target: 'Health Sector',
-      description: 'Unauthorized access attempt to patient database systems',
-      time: '6 hours ago',
-      source: 'Hospital SIEM',
-      iocs: ['backdoor.php', 'data-exfil.py']
-    },
-    {
-      id: 5,
-      type: 'Malware',
-      severity: 'medium',
-      target: 'Education',
-      description: 'Malware distribution via compromised university websites',
-      time: '8 hours ago',
-      source: 'UZ IT Dept',
-      iocs: ['payload.js', 'dropper.bat']
     }
   ];
+
+  const displayThreats = error || threats.length === 0 ? mockThreats : threats;
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
@@ -83,6 +69,20 @@ export function ThreatIntelligence() {
     }
   };
 
+  const getTimeAgo = (timestamp: string) => {
+    const now = new Date();
+    const time = new Date(timestamp);
+    const diffMs = now.getTime() - time.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    
+    if (diffMins < 60) {
+      return `${diffMins} min ago`;
+    } else {
+      return `${diffHours} hours ago`;
+    }
+  };
+
   return (
     <Card className="bg-slate-800 border-slate-700">
       <CardHeader>
@@ -91,16 +91,19 @@ export function ThreatIntelligence() {
             <AlertTriangle className="h-5 w-5" />
             <span>Threat Intelligence Feed</span>
           </div>
-          <Badge variant="outline" className="text-slate-300 border-slate-600">
-            <Activity className="h-3 w-3 mr-1" />
-            Real-time
-          </Badge>
+          <div className="flex items-center space-x-2">
+            {isLoading && <Loader2 className="h-4 w-4 animate-spin text-blue-400" />}
+            <Badge variant="outline" className={`text-slate-300 border-slate-600 ${error ? 'border-red-600 text-red-400' : ''}`}>
+              <Activity className="h-3 w-3 mr-1" />
+              {error ? 'Offline Mode' : 'Real-time'}
+            </Badge>
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-80">
           <div className="space-y-4">
-            {threats.map((threat) => (
+            {displayThreats.map((threat) => (
               <div
                 key={threat.id}
                 className={`p-4 rounded-lg border transition-all hover:bg-slate-700/50 cursor-pointer ${getSeverityColor(threat.severity)}`}
@@ -115,7 +118,7 @@ export function ThreatIntelligence() {
                   </div>
                   <div className="flex items-center space-x-1 text-slate-400 text-xs">
                     <Clock className="h-3 w-3" />
-                    <span>{threat.time}</span>
+                    <span>{getTimeAgo(threat.timestamp)}</span>
                   </div>
                 </div>
                 
@@ -126,11 +129,11 @@ export function ThreatIntelligence() {
                     Source: <span className="text-blue-400">{threat.source}</span>
                   </div>
                   <div className="text-slate-400">
-                    IOCs: <span className="text-red-400">{threat.iocs.length}</span>
+                    IOCs: <span className="text-red-400">{threat.iocs?.length || 0}</span>
                   </div>
                 </div>
                 
-                {threat.iocs.length > 0 && (
+                {threat.iocs && threat.iocs.length > 0 && (
                   <div className="mt-2 pt-2 border-t border-slate-600">
                     <div className="flex flex-wrap gap-1">
                       {threat.iocs.slice(0, 2).map((ioc, index) => (

@@ -160,7 +160,7 @@ export function EnhancedIncidentTracker() {
   });
 
   const getCategoryStats = () => {
-    const stats = {};
+    const stats: { [key: string]: number } = {};
     incidents.forEach(incident => {
       const category = incident.category;
       if (!stats[category]) {
@@ -227,7 +227,7 @@ export function EnhancedIncidentTracker() {
                       className="bg-slate-700 text-white border border-slate-600 rounded px-3 py-2"
                     >
                       <option value="all">All Subcategories</option>
-                      {incidentCategories[filterCategory]?.map(subcategory => (
+                      {incidentCategories[filterCategory as keyof typeof incidentCategories]?.map(subcategory => (
                         <option key={subcategory} value={subcategory}>{subcategory}</option>
                       ))}
                     </select>
@@ -246,7 +246,7 @@ export function EnhancedIncidentTracker() {
                       <div className="space-y-1">
                         <div className="flex items-center space-x-2">
                           <span className="text-white font-semibold">{incident.id}</span>
-                          <Badge variant={getSeverityVariant(incident.severity)}>
+                          <Badge variant={getSeverityVariant(incident.severity) as any}>
                             {incident.severity.toUpperCase()}
                           </Badge>
                           <Badge variant="outline" className="text-slate-300 border-slate-500">
@@ -370,7 +370,7 @@ export function EnhancedIncidentTracker() {
                       className="w-full bg-slate-700 text-white border border-slate-600 rounded px-3 py-2"
                     >
                       <option value="">Select a subcategory</option>
-                      {incidentCategories[selectedCategory]?.map(subcategory => (
+                      {incidentCategories[selectedCategory as keyof typeof incidentCategories]?.map(subcategory => (
                         <option key={subcategory} value={subcategory}>{subcategory}</option>
                       ))}
                     </select>
