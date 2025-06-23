@@ -1,132 +1,175 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Activity, AlertTriangle } from "lucide-react";
+import { MapPin, AlertTriangle, Loader2 } from "lucide-react";
+import { useLogs } from "../hooks/useApiData";
 
 export function ThreatMap() {
-  const provinces = [
-    { name: 'Harare', threats: 45, status: 'critical', x: 60, y: 35 },
-    { name: 'Bulawayo', threats: 23, status: 'high', x: 25, y: 65 },
-    { name: 'Manicaland', threats: 12, status: 'medium', x: 85, y: 45 },
-    { name: 'Mashonaland Central', threats: 8, status: 'low', x: 55, y: 25 },
-    { name: 'Mashonaland East', threats: 15, status: 'medium', x: 70, y: 30 },
-    { name: 'Mashonaland West', threats: 18, status: 'medium', x: 45, y: 30 },
-    { name: 'Masvingo', threats: 9, status: 'low', x: 60, y: 70 },
-    { name: 'Matabeleland North', threats: 11, status: 'low', x: 30, y: 45 },
-    { name: 'Matabeleland South', threats: 14, status: 'medium', x: 35, y: 75 },
-    { name: 'Midlands', threats: 19, status: 'medium', x: 50, y: 50 }
-  ];
+  const { data: logs = [], isLoading, error } = useLogs();
 
-  const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
+  // Calculate province threat data from real logs
+  const getProvinceData = () => {
+    const provinceCounts: { [key: string]: number } = {};
+    
+    logs.forEach(log => {
+      // Extract province from source or metadata if available
+      const source = log.source || '';
+      let province = 'Unknown';
+      
+      // Simple mapping based on source patterns
+      if (source.includes('Harare') || source.includes('CERT-ZW')) province = 'Harare';
+      else if (source.includes('Bulawayo')) province = 'Bulawayo';
+      else if (source.includes('Mutare')) province = 'Manicaland';
+      else if (source.includes('Gweru')) province = 'Midlands';
+      else if (source.includes('Masvingo')) province = 'Masvingo';
+      else if (source.includes('Chinhoyi')) province = 'Mashonaland West';
+      else if (source.includes('Bindura')) province = 'Mashonaland Central';
+      else if (source.includes('Marondera')) province = 'Mashonaland East';
+      else if (source.includes('Gwanda')) province = 'Matabeleland South';
+      else if (source.includes('Hwange')) province = 'Matabeleland North';
+      
+      provinceCounts[province] = (provinceCounts[province] || 0) + 1;
+    });
+
+    // Define province positions (approximate coordinates for Zimbabwe map)
+    const provincePositions: { [key: string]: { x: number; y: number } } = {
+      'Harare': { x: 60, y: 35 },
+      'Bulawayo': { x: 40, y: 60 },
+      'Manicaland': { x: 85, y: 45 },
+      'Midlands': { x: 50, y: 50 },
+      'Masvingo': { x: 60, y: 70 },
+      'Mashonaland West': { x: 45, y: 30 },
+      'Mashonaland Central': { x: 55, y: 25 },
+      'Mashonaland East': { x: 70, y: 30 },
+      'Matabeleland South': { x: 35, y: 75 },
+      'Matabeleland North': { x: 25, y: 45 },
+    };
+
+    return Object.entries(provinceCounts).map(([name, threats]) => ({
+      name,
+      threats,
+      status: threats > 5 ? 'critical' : threats > 2 ? 'warning' : 'safe',
+      x: provincePositions[name]?.x || 50,
+      y: provincePositions[name]?.y || 50
+    }));
+  };
+
+  const provinces = getProvinceData();
 
   const getStatusColor = (status: string) => {
     switch (status) {
+      case 'safe': return 'bg-green-500';
+      case 'warning': return 'bg-yellow-500';
       case 'critical': return 'bg-red-500';
-      case 'high': return 'bg-amber-500';
-      case 'medium': return 'bg-yellow-500';
-      case 'low': return 'bg-green-500';
       default: return 'bg-gray-500';
     }
   };
 
-  const getPulseSize = (threats: number) => {
-    if (threats > 30) return 'w-6 h-6';
-    if (threats > 20) return 'w-5 h-5';
-    if (threats > 10) return 'w-4 h-4';
-    return 'w-3 h-3';
-  };
+  if (error) {
+    return (
+      <Card className="bg-slate-800 border-slate-700">
+        <CardHeader>
+          <CardTitle className="text-white">Threat Map</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8">
+            <AlertTriangle className="h-12 w-12 text-red-400 mx-auto mb-4" />
+            <p className="text-red-400 mb-2">Failed to load map data</p>
+            <p className="text-slate-400 text-sm">Check API connection</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="bg-slate-800 border-slate-700">
       <CardHeader>
-        <CardTitle className="text-white flex items-center space-x-2">
-          <MapPin className="h-5 w-5" />
-          <span>Threat Distribution Map</span>
+        <CardTitle className="text-white flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <MapPin className="h-5 w-5" />
+            <span>Threat Map - Zimbabwe</span>
+          </div>
+          {isLoading && <Loader2 className="h-4 w-4 animate-spin text-blue-400" />}
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="relative bg-slate-900 rounded-lg p-6 h-80">
-          {/* Simplified Zimbabwe map outline */}
-          <svg 
-            viewBox="0 0 100 100" 
-            className="w-full h-full absolute inset-0 opacity-30"
-            preserveAspectRatio="xMidYMid meet"
-          >
-            <path 
-              d="M20,20 L80,20 L85,30 L85,70 L80,80 L20,80 L15,70 L15,30 Z" 
-              fill="none" 
-              stroke="#475569" 
-              strokeWidth="0.5"
-            />
-          </svg>
-
-          {/* Threat indicators */}
-          {provinces.map((province) => (
-            <div
-              key={province.name}
-              className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group"
-              style={{ left: `${province.x}%`, top: `${province.y}%` }}
-              onClick={() => setSelectedProvince(province.name)}
+        <div className="relative">
+          {/* Simple Zimbabwe outline representation */}
+          <div className="relative w-full h-80 bg-slate-700 rounded-lg border border-slate-600 overflow-hidden">
+            <svg
+              viewBox="0 0 100 100"
+              className="w-full h-full"
+              style={{ background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)' }}
             >
-              <div className={`${getPulseSize(province.threats)} ${getStatusColor(province.status)} rounded-full animate-pulse relative`}>
-                <div className="absolute inset-0 rounded-full bg-white opacity-30 animate-ping"></div>
-              </div>
+              {/* Zimbabwe outline (simplified) */}
+              <path
+                d="M15,20 L85,20 L90,30 L85,80 L15,85 L10,40 Z"
+                fill="rgba(51, 65, 85, 0.3)"
+                stroke="rgba(71, 85, 105, 0.5)"
+                strokeWidth="0.5"
+              />
               
-              {/* Tooltip */}
-              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-slate-700 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                <div className="font-semibold">{province.name}</div>
-                <div className="text-slate-300">{province.threats} threats</div>
-                <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-slate-700"></div>
-              </div>
-            </div>
-          ))}
-        </div>
+              {/* Threat markers */}
+              {provinces.map((province) => (
+                <g key={province.name}>
+                  <circle
+                    cx={province.x}
+                    cy={province.y}
+                    r={Math.max(2, Math.min(8, province.threats))}
+                    className={`${getStatusColor(province.status)} opacity-80 hover:opacity-100 transition-opacity cursor-pointer`}
+                  />
+                  <text
+                    x={province.x}
+                    y={province.y - 10}
+                    textAnchor="middle"
+                    className="text-xs fill-white font-medium"
+                    style={{ fontSize: '3px' }}
+                  >
+                    {province.name}
+                  </text>
+                </g>
+              ))}
+            </svg>
+          </div>
 
-        {/* Legend and Stats */}
-        <div className="mt-6 space-y-4">
-          <div className="flex items-center justify-between">
+          {/* Legend */}
+          <div className="mt-4 flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                <span className="text-sm text-slate-300">Critical</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
-                <span className="text-sm text-slate-300">High</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                <span className="text-sm text-slate-300">Medium</span>
-              </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1">
                 <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                <span className="text-sm text-slate-300">Low</span>
+                <span className="text-xs text-slate-300">Safe</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                <span className="text-xs text-slate-300">Warning</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                <span className="text-xs text-slate-300">Critical</span>
               </div>
             </div>
             <Badge variant="outline" className="text-slate-300 border-slate-600">
-              <Activity className="h-3 w-3 mr-1" />
-              Live Updates
+              {provinces.reduce((sum, p) => sum + p.threats, 0)} Total Threats
             </Badge>
           </div>
 
-          {selectedProvince && (
-            <div className="bg-slate-700 rounded-lg p-3">
-              <div className="text-white font-semibold mb-2">{selectedProvince} Province</div>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="text-slate-300">Active Threats: </span>
-                  <span className="text-red-400 font-semibold">
-                    {provinces.find(p => p.name === selectedProvince)?.threats}
-                  </span>
+          {/* Province list */}
+          {provinces.length > 0 && (
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              {provinces.slice(0, 6).map((province) => (
+                <div key={province.name} className="flex items-center justify-between text-sm">
+                  <span className="text-slate-300">{province.name}</span>
+                  <Badge variant="outline" className={`text-xs ${
+                    province.status === 'critical' ? 'text-red-400 border-red-600' :
+                    province.status === 'warning' ? 'text-yellow-400 border-yellow-600' :
+                    'text-green-400 border-green-600'
+                  }`}>
+                    {province.threats}
+                  </Badge>
                 </div>
-                <div>
-                  <span className="text-slate-300">Risk Level: </span>
-                  <span className="text-amber-400 font-semibold">
-                    {provinces.find(p => p.name === selectedProvince)?.status?.toUpperCase()}
-                  </span>
-                </div>
-              </div>
+              ))}
             </div>
           )}
         </div>

@@ -3,147 +3,133 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { TrendingUp, TrendingDown, AlertTriangle, Shield, Users, Zap } from "lucide-react";
+import { Shield, AlertTriangle, TrendingUp, Users, Loader2 } from "lucide-react";
+import { useLogs } from "../hooks/useApiData";
 
 export function SectorOverview() {
-  const sectors = [
-    {
-      name: 'Government',
-      status: 'critical',
-      threats: 23,
-      protection: 89,
-      trend: 'up',
-      assets: 156,
-      incidents: 8,
-      color: 'bg-red-500'
-    },
-    {
-      name: 'Banking & Finance',
-      status: 'high',
-      threats: 18,
-      protection: 95,
-      trend: 'down',
-      assets: 89,
-      incidents: 3,
-      color: 'bg-amber-500'
-    },
-    {
-      name: 'Telecoms & ICT',
-      status: 'high',
-      threats: 15,
-      protection: 92,
-      trend: 'up',
-      assets: 234,
-      incidents: 5,
-      color: 'bg-amber-500'
-    },
-    {
-      name: 'Energy',
-      status: 'medium',
-      threats: 9,
-      protection: 88,
-      trend: 'down',
-      assets: 67,
-      incidents: 2,
-      color: 'bg-yellow-500'
-    },
-    {
-      name: 'Industrial & Mining',
-      status: 'medium',
-      threats: 12,
-      protection: 85,
-      trend: 'up',
-      assets: 123,
-      incidents: 4,
-      color: 'bg-yellow-500'
-    },
-    {
-      name: 'Health Sector',
-      status: 'low',
-      threats: 6,
-      protection: 91,
-      trend: 'down',
-      assets: 45,
-      incidents: 1,
-      color: 'bg-green-500'
-    }
-  ];
+  const { data: logs = [], isLoading, error } = useLogs();
 
-  const getStatusBadgeVariant = (status: string) => {
+  // Calculate sector metrics from real log data
+  const getSectorMetrics = () => {
+    const sectorCounts: { [key: string]: { threats: number; incidents: number } } = {};
+    
+    logs.forEach(log => {
+      const sector = log.sector || 'Unknown';
+      if (!sectorCounts[sector]) {
+        sectorCounts[sector] = { threats: 0, incidents: 0 };
+      }
+      
+      if (log.metadata?.type === 'threat') {
+        sectorCounts[sector].threats++;
+      } else if (log.metadata?.type === 'incident') {
+        sectorCounts[sector].incidents++;
+      }
+    });
+
+    return Object.entries(sectorCounts).map(([name, counts]) => ({
+      name,
+      threats: counts.threats,
+      incidents: counts.incidents,
+      protection: Math.max(10, 100 - (counts.threats * 5 + counts.incidents * 10)), // Simple protection score
+      status: counts.threats > 5 ? 'critical' : counts.threats > 2 ? 'warning' : 'safe'
+    }));
+  };
+
+  const sectors = getSectorMetrics();
+
+  const getStatusColor = (status: string) => {
     switch (status) {
-      case 'critical': return 'destructive';
-      case 'high': return 'secondary';
-      case 'medium': return 'outline';
-      case 'low': return 'default';
-      default: return 'outline';
+      case 'safe': return 'text-green-400';
+      case 'warning': return 'text-yellow-400';
+      case 'critical': return 'text-red-400';
+      default: return 'text-gray-400';
     }
   };
 
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-white">National Cybersecurity Overview</h2>
-        <div className="flex space-x-2">
-          <Badge variant="destructive">Critical: 2</Badge>
-          <Badge variant="secondary">High: 2</Badge>
-          <Badge variant="outline">Medium: 2</Badge>
-        </div>
-      </div>
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'safe': return <Shield className="h-4 w-4" />;
+      case 'warning': return <TrendingUp className="h-4 w-4" />;
+      case 'critical': return <AlertTriangle className="h-4 w-4" />;
+      default: return <Shield className="h-4 w-4" />;
+    }
+  };
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {sectors.map((sector) => (
-          <Card key={sector.name} className="bg-slate-800 border-slate-700 hover:bg-slate-750 transition-colors cursor-pointer">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg text-white">{sector.name}</CardTitle>
-                <Badge variant={getStatusBadgeVariant(sector.status)} className="text-xs">
-                  {sector.status.toUpperCase()}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <AlertTriangle className="h-4 w-4 text-red-400" />
-                    <span className="text-sm text-slate-300">Active Threats</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-2xl font-bold text-red-400">{sector.threats}</span>
-                    {sector.trend === 'up' ? (
-                      <TrendingUp className="h-4 w-4 text-red-400" />
-                    ) : (
-                      <TrendingDown className="h-4 w-4 text-green-400" />
-                    )}
+  if (error) {
+    return (
+      <Card className="bg-slate-800 border-slate-700">
+        <CardHeader>
+          <CardTitle className="text-white">Sector Overview</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8">
+            <AlertTriangle className="h-12 w-12 text-red-400 mx-auto mb-4" />
+            <p className="text-red-400 mb-2">Failed to load sector data</p>
+            <p className="text-slate-400 text-sm">Check API connection</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="bg-slate-800 border-slate-700">
+      <CardHeader>
+        <CardTitle className="text-white flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Shield className="h-5 w-5" />
+            <span>Sector Overview</span>
+          </div>
+          {isLoading && <Loader2 className="h-4 w-4 animate-spin text-blue-400" />}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {sectors.length === 0 && !isLoading ? (
+          <div className="text-center py-8">
+            <Users className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+            <p className="text-slate-400">No sector data available</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {sectors.map((sector) => (
+              <div
+                key={sector.name}
+                className="bg-slate-700 rounded-lg p-4 border border-slate-600 hover:bg-slate-650 transition-colors cursor-pointer"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-white font-semibold">{sector.name}</h3>
+                  <div className={`flex items-center space-x-1 ${getStatusColor(sector.status)}`}>
+                    {getStatusIcon(sector.status)}
+                    <Badge variant="outline" className={`text-xs ${getStatusColor(sector.status)} border-current`}>
+                      {sector.status}
+                    </Badge>
                   </div>
                 </div>
                 
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <Shield className="h-4 w-4 text-green-400" />
-                    <span className="text-sm text-slate-300">Protection</span>
+                <div className="space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-400">Active Threats</span>
+                    <span className="text-red-400 font-semibold">{sector.threats}</span>
                   </div>
-                  <div className="space-y-1">
-                    <span className="text-2xl font-bold text-green-400">{sector.protection}%</span>
+                  
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-400">Incidents</span>
+                    <span className="text-amber-400 font-semibold">{sector.incidents}</span>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-400">Protection Score</span>
+                      <span className="text-white font-semibold">{sector.protection}%</span>
+                    </div>
                     <Progress value={sector.protection} className="h-2" />
                   </div>
                 </div>
               </div>
-
-              <div className="grid grid-cols-2 gap-4 pt-2 border-t border-slate-700">
-                <div className="flex items-center space-x-2">
-                  <Users className="h-4 w-4 text-blue-400" />
-                  <span className="text-sm text-slate-300">{sector.assets} Assets</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Zap className="h-4 w-4 text-amber-400" />
-                  <span className="text-sm text-slate-300">{sector.incidents} Incidents</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
