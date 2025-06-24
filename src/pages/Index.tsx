@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { CyberSecuritySidebar } from "@/components/CyberSecuritySidebar";
@@ -13,7 +14,7 @@ import { AnalystDashboard } from "@/components/AnalystDashboard";
 import { SectorLeadDashboard } from "@/components/SectorLeadDashboard";
 import { EnhancedIncidentTracker } from "@/components/EnhancedIncidentTracker";
 
-export type SectorType = 'government' | 'banking' | 'private' | 'education' | 'industrial' | 'telecoms' | 'health' | 'energy' | 'transport' | 'media' | 'overview';
+export type SectorType = 'government' | 'banking' | 'private' | 'education' | 'industrial' | 'telecoms' | 'health' | 'energy' | 'transport' | 'media' | 'overview' | 'zchpc';
 
 const Index = () => {
   const [activeSector, setActiveSector] = useState<SectorType>('overview');
@@ -65,12 +66,15 @@ const Index = () => {
         />
         <main className="flex-1 overflow-hidden">
           <div className="flex flex-col h-screen">
-            <DashboardHeader 
-              userRole={userRole} 
-              setUserRole={setUserRole}
-              onShowEnhancedIncidents={() => setShowEnhancedIncidents(!showEnhancedIncidents)}
-              showEnhancedIncidents={showEnhancedIncidents}
-            />
+            <div className="flex items-center p-4">
+              <SidebarTrigger className="mr-4" />
+              <DashboardHeader 
+                userRole={userRole} 
+                setUserRole={setUserRole}
+                onShowEnhancedIncidents={() => setShowEnhancedIncidents(!showEnhancedIncidents)}
+                showEnhancedIncidents={showEnhancedIncidents}
+              />
+            </div>
             <div className="flex-1 overflow-auto p-6 space-y-6">
               {renderDashboardContent()}
             </div>

@@ -51,6 +51,38 @@ export function SectorDetail({ sector }: SectorDetailProps) {
         'Zimbabwe National Statistics Agency (ZIMSTAT)'
       ]
     },
+    zchpc: {
+      name: 'Zimbabwe Centre For High Performance Computing (ZCHPC)',
+      description: 'National high-performance computing infrastructure and research facility',
+      threatLevel: 'high',
+      activeThreats: 15,
+      protectionScore: 94,
+      totalAssets: 45,
+      criticalAssets: 28,
+      recentIncidents: 2,
+      keyMetrics: [
+        { label: 'Supercomputer Security', value: 96, status: 'good' },
+        { label: 'Research Data Protection', value: 93, status: 'good' },
+        { label: 'Network Infrastructure', value: 91, status: 'good' },
+        { label: 'Access Management', value: 89, status: 'medium' }
+      ],
+      topThreats: [
+        'Advanced Persistent Threats (APTs)',
+        'Research Data Theft',
+        'Nation-State Cyber Espionage',
+        'Insider Threats'
+      ],
+      organizations: [
+        'ZCHPC Main Computing Center',
+        'Research Computing Division',
+        'Data Analytics Unit',
+        'Scientific Computing Laboratory',
+        'Computational Biology Center',
+        'Climate Modeling Division',
+        'AI and Machine Learning Hub',
+        'Quantum Computing Research Unit'
+      ]
+    },
     banking: {
       name: 'Banking & Finance Sector',
       description: 'Commercial banks, central bank, microfinance, fintechs',

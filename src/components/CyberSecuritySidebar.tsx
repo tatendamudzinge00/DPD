@@ -12,7 +12,7 @@ import {
   SidebarHeader,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import { Shield, Building2, Landmark, GraduationCap, Factory, Radio, Heart, Zap, Truck, Tv, Users, Database } from "lucide-react";
+import { Shield, Building2, Landmark, GraduationCap, Factory, Radio, Heart, Zap, Truck, Tv, Users, Database, Server } from "lucide-react";
 import { SectorType } from "@/pages/Index";
 import { Badge } from "@/components/ui/badge";
 
@@ -34,6 +34,7 @@ const sectors = [
   { id: 'energy', title: 'Energy', icon: Zap, threatLevel: 'high' },
   { id: 'transport', title: 'Transport', icon: Truck, threatLevel: 'low' },
   { id: 'media', title: 'Media', icon: Tv, threatLevel: 'low' },
+  { id: 'zchpc', title: 'Zimbabwe Centre For High Performance Computing (ZCHPC)', icon: Server, threatLevel: 'high' },
 ];
 
 export function CyberSecuritySidebar({ activeSector, setActiveSector, userRole }: CyberSecuritySidebarProps) {
@@ -47,11 +48,11 @@ export function CyberSecuritySidebar({ activeSector, setActiveSector, userRole }
   };
 
   return (
-    <Sidebar className="border-r border-slate-800 bg-slate-900">
+    <Sidebar className="border-r border-slate-800 bg-slate-900" collapsible="icon">
       <SidebarHeader className="border-b border-slate-800 p-4">
         <div className="flex items-center space-x-2">
           <Shield className="h-8 w-8 text-blue-400" />
-          <div>
+          <div className="group-data-[collapsible=icon]:hidden">
             <h1 className="text-lg font-bold text-white">Data Protection Dashboard</h1>
             <p className="text-xs text-slate-400">National Cyber Security Operations Center</p>
           </div>
@@ -60,7 +61,7 @@ export function CyberSecuritySidebar({ activeSector, setActiveSector, userRole }
       
       <SidebarContent className="px-4 py-6">
         <SidebarGroup>
-          <SidebarGroupLabel className="text-slate-300 font-semibold mb-4">
+          <SidebarGroupLabel className="text-slate-300 font-semibold mb-4 group-data-[collapsible=icon]:hidden">
             Sector Dashboard
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -74,12 +75,13 @@ export function CyberSecuritySidebar({ activeSector, setActiveSector, userRole }
                         ? 'bg-blue-600 text-white shadow-lg' 
                         : 'text-slate-300 hover:bg-slate-800 hover:text-white'
                     }`}
+                    tooltip={sector.title}
                   >
                     <div className="flex items-center space-x-3">
                       <sector.icon className="h-5 w-5" />
-                      <span className="font-medium">{sector.title}</span>
+                      <span className="font-medium group-data-[collapsible=icon]:hidden">{sector.title}</span>
                     </div>
-                    <div className={`w-3 h-3 rounded-full ${getThreatLevelColor(sector.threatLevel)}`} />
+                    <div className={`w-3 h-3 rounded-full ${getThreatLevelColor(sector.threatLevel)} group-data-[collapsible=icon]:hidden`} />
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -89,7 +91,7 @@ export function CyberSecuritySidebar({ activeSector, setActiveSector, userRole }
       </SidebarContent>
 
       <SidebarFooter className="border-t border-slate-800 p-4">
-        <div className="text-center">
+        <div className="text-center group-data-[collapsible=icon]:hidden">
           <Badge variant="outline" className="text-slate-400 border-slate-600">
             Role: {userRole.toUpperCase()}
           </Badge>
