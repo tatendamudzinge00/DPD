@@ -2,25 +2,28 @@
 import React from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Shield, Bell, Settings, User, FileText } from "lucide-react";
+import { Shield, Bell, Settings, User, FileText, LogOut } from "lucide-react";
+import { useAuth } from '@/hooks/useAuth';
 
 interface DashboardHeaderProps {
-  userRole: 'admin' | 'analyst' | 'sector-lead';
-  setUserRole: (role: 'admin' | 'analyst' | 'sector-lead') => void;
   onShowEnhancedIncidents?: () => void;
   showEnhancedIncidents?: boolean;
 }
 
 export function DashboardHeader({ 
-  userRole, 
-  setUserRole, 
   onShowEnhancedIncidents,
   showEnhancedIncidents 
 }: DashboardHeaderProps) {
+  const { profile, signOut } = useAuth();
+  
   const roleDisplayNames = {
     admin: 'System Administrator',
     analyst: 'Security Analyst',
     'sector-lead': 'Sector Lead'
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
   };
 
   return (
@@ -52,35 +55,13 @@ export function DashboardHeader({
           <div className="flex items-center space-x-2">
             <Badge variant="outline" className="text-slate-300 border-slate-600">
               <User className="h-3 w-3 mr-1" />
-              {roleDisplayNames[userRole]}
+              {profile && roleDisplayNames[profile.role]}
             </Badge>
-          </div>
-
-          <div className="flex items-center space-x-1">
-            <Button
-              variant={userRole === 'admin' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setUserRole('admin')}
-              className="text-xs"
-            >
-              Admin
-            </Button>
-            <Button
-              variant={userRole === 'analyst' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setUserRole('analyst')}
-              className="text-xs"
-            >
-              Analyst
-            </Button>
-            <Button
-              variant={userRole === 'sector-lead' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setUserRole('sector-lead')}
-              className="text-xs"
-            >
-              Sector Lead
-            </Button>
+            {profile && (
+              <Badge variant="outline" className="text-slate-300 border-slate-600">
+                {profile.sector.toUpperCase()}
+              </Badge>
+            )}
           </div>
 
           <div className="flex items-center space-x-2">
@@ -89,6 +70,14 @@ export function DashboardHeader({
             </Button>
             <Button variant="ghost" size="sm" className="text-slate-300">
               <Settings className="h-4 w-4" />
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-slate-300"
+              onClick={handleSignOut}
+            >
+              <LogOut className="h-4 w-4" />
             </Button>
           </div>
         </div>

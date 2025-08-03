@@ -13,12 +13,14 @@ import { AdminDashboard } from "@/components/AdminDashboard";
 import { AnalystDashboard } from "@/components/AnalystDashboard";
 import { SectorLeadDashboard } from "@/components/SectorLeadDashboard";
 import { EnhancedIncidentTracker } from "@/components/EnhancedIncidentTracker";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { useAuth } from '@/hooks/useAuth';
 
 export type SectorType = 'government' | 'banking' | 'private' | 'education' | 'industrial' | 'telecoms' | 'health' | 'energy' | 'transport' | 'media' | 'overview' | 'zchpc';
 
 const Index = () => {
+  const { profile } = useAuth();
   const [activeSector, setActiveSector] = useState<SectorType>('overview');
-  const [userRole, setUserRole] = useState<'admin' | 'analyst' | 'sector-lead'>('admin');
   const [showEnhancedIncidents, setShowEnhancedIncidents] = useState(false);
 
   const renderDashboardContent = () => {
@@ -26,14 +28,16 @@ const Index = () => {
       return <EnhancedIncidentTracker />;
     }
 
+    if (!profile) return null;
+
     // Role-based dashboard rendering
-    switch (userRole) {
+    switch (profile.role) {
       case 'admin':
         return <AdminDashboard />;
       case 'analyst':
         return <AnalystDashboard />;
       case 'sector-lead':
-        return <SectorLeadDashboard sector={activeSector} />;
+        return <SectorLeadDashboard sector={profile.sector} />;
       default:
         // Default overview dashboard for backward compatibility
         if (activeSector === 'overview') {
@@ -57,31 +61,31 @@ const Index = () => {
   };
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-slate-950">
-        <CyberSecuritySidebar 
-          activeSector={activeSector} 
-          setActiveSector={setActiveSector}
-          userRole={userRole}
-        />
-        <main className="flex-1 overflow-hidden">
-          <div className="flex flex-col h-screen">
-            <div className="flex items-center p-4">
-              <SidebarTrigger className="mr-4" />
-              <DashboardHeader 
-                userRole={userRole} 
-                setUserRole={setUserRole}
-                onShowEnhancedIncidents={() => setShowEnhancedIncidents(!showEnhancedIncidents)}
-                showEnhancedIncidents={showEnhancedIncidents}
-              />
+    <ProtectedRoute>
+      <SidebarProvider>
+        <div className="min-h-screen flex w-full bg-slate-950">
+          <CyberSecuritySidebar 
+            activeSector={activeSector} 
+            setActiveSector={setActiveSector}
+            userRole={profile?.role || 'analyst'}
+          />
+          <main className="flex-1 overflow-hidden">
+            <div className="flex flex-col h-screen">
+              <div className="flex items-center p-4">
+                <SidebarTrigger className="mr-4" />
+                <DashboardHeader 
+                  onShowEnhancedIncidents={() => setShowEnhancedIncidents(!showEnhancedIncidents)}
+                  showEnhancedIncidents={showEnhancedIncidents}
+                />
+              </div>
+              <div className="flex-1 overflow-auto p-6 space-y-6">
+                {renderDashboardContent()}
+              </div>
             </div>
-            <div className="flex-1 overflow-auto p-6 space-y-6">
-              {renderDashboardContent()}
-            </div>
-          </div>
-        </main>
-      </div>
-    </SidebarProvider>
+          </main>
+        </div>
+      </SidebarProvider>
+    </ProtectedRoute>
   );
 };
 

@@ -14,16 +14,74 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string | null
+          id: string
+          is_active: boolean
+          role: Database["public"]["Enums"]["user_role"]
+          sector: Database["public"]["Enums"]["sector_type"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name?: string | null
+          id?: string
+          is_active?: boolean
+          role?: Database["public"]["Enums"]["user_role"]
+          sector: Database["public"]["Enums"]["sector_type"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          id?: string
+          is_active?: boolean
+          role?: Database["public"]["Enums"]["user_role"]
+          sector?: Database["public"]["Enums"]["sector_type"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_current_user_role: {
+        Args: Record<PropertyKey, never>
+        Returns: Database["public"]["Enums"]["user_role"]
+      }
+      get_current_user_sector: {
+        Args: Record<PropertyKey, never>
+        Returns: Database["public"]["Enums"]["sector_type"]
+      }
+      has_role: {
+        Args: { _role: Database["public"]["Enums"]["user_role"] }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      sector_type:
+        | "government"
+        | "banking"
+        | "private"
+        | "education"
+        | "industrial"
+        | "telecoms"
+        | "health"
+        | "energy"
+        | "transport"
+        | "media"
+        | "zchpc"
+      user_role: "admin" | "analyst" | "sector-lead"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +208,21 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      sector_type: [
+        "government",
+        "banking",
+        "private",
+        "education",
+        "industrial",
+        "telecoms",
+        "health",
+        "energy",
+        "transport",
+        "media",
+        "zchpc",
+      ],
+      user_role: ["admin", "analyst", "sector-lead"],
+    },
   },
 } as const
