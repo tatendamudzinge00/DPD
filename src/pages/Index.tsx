@@ -67,7 +67,6 @@ const Index = () => {
           <CyberSecuritySidebar 
             activeSector={activeSector} 
             setActiveSector={setActiveSector}
-            userRole={profile?.role || 'analyst'}
           />
           <main className="flex-1 overflow-hidden">
             <div className="flex flex-col h-screen">

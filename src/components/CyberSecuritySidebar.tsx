@@ -15,11 +15,11 @@ import {
 import { Shield, Building2, Landmark, GraduationCap, Factory, Radio, Heart, Zap, Truck, Tv, Users, Database, Server } from "lucide-react";
 import { SectorType } from "@/pages/Index";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from '@/hooks/useAuth';
 
 interface CyberSecuritySidebarProps {
   activeSector: SectorType;
   setActiveSector: (sector: SectorType) => void;
-  userRole: string;
 }
 
 const sectors = [
@@ -37,7 +37,9 @@ const sectors = [
   { id: 'zchpc', title: 'Zimbabwe Centre For High Performance Computing (ZCHPC)', icon: Server, threatLevel: 'high' },
 ];
 
-export function CyberSecuritySidebar({ activeSector, setActiveSector, userRole }: CyberSecuritySidebarProps) {
+export function CyberSecuritySidebar({ activeSector, setActiveSector }: CyberSecuritySidebarProps) {
+  const { profile } = useAuth();
+  
   const getThreatLevelColor = (level: string) => {
     switch (level) {
       case 'high': return 'bg-red-600';
@@ -93,7 +95,7 @@ export function CyberSecuritySidebar({ activeSector, setActiveSector, userRole }
       <SidebarFooter className="border-t border-slate-800 p-4">
         <div className="text-center group-data-[collapsible=icon]:hidden">
           <Badge variant="outline" className="text-slate-400 border-slate-600">
-            Role: {userRole.toUpperCase()}
+            Role: {profile?.role.toUpperCase() || 'GUEST'}
           </Badge>
           <p className="text-xs text-slate-500 mt-2">Zimbabwe CERT</p>
         </div>
