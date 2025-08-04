@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { RealTimeIncidents } from "./RealTimeIncidents";
+import { RealTimeSecurityLogs } from "./RealTimeSecurityLogs";
 import { 
   Shield, 
   TrendingUp, 
@@ -328,6 +330,12 @@ export function SectorLeadDashboard({ sector = 'Government' }: SectorLeadDashboa
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Real-time Dashboard Components */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <RealTimeIncidents />
+        <RealTimeSecurityLogs />
       </div>
     </div>
   );

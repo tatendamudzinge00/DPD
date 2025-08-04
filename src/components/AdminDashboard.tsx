@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { RealTimeIncidents } from "./RealTimeIncidents";
+import { RealTimeSecurityLogs } from "./RealTimeSecurityLogs";
 import { 
   Shield, 
   Users, 
@@ -239,6 +241,12 @@ export function AdminDashboard() {
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Real-time Dashboard Components */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <RealTimeIncidents />
+        <RealTimeSecurityLogs />
       </div>
 
       {/* System Settings */}

@@ -14,6 +14,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      incidents: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          reported_by: string | null
+          sector: string
+          severity: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          reported_by?: string | null
+          sector: string
+          severity?: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          reported_by?: string | null
+          sector?: string
+          severity?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incidents_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -47,6 +91,42 @@ export type Database = {
           sector?: Database["public"]["Enums"]["sector_type"]
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      security_logs: {
+        Row: {
+          created_at: string
+          description: string | null
+          event_type: string
+          id: string
+          metadata: Json | null
+          sector: string
+          severity: string
+          source: string
+          target: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          sector: string
+          severity?: string
+          source: string
+          target?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          sector?: string
+          severity?: string
+          source?: string
+          target?: string | null
         }
         Relationships: []
       }

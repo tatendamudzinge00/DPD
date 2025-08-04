@@ -15,6 +15,7 @@ import { SectorLeadDashboard } from "@/components/SectorLeadDashboard";
 import { EnhancedIncidentTracker } from "@/components/EnhancedIncidentTracker";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useAuth } from '@/hooks/useAuth';
+import { useRealtimeIncidents, useRealtimeSecurityLogs } from "@/hooks/useSupabaseData";
 
 export type SectorType = 'government' | 'banking' | 'private' | 'education' | 'industrial' | 'telecoms' | 'health' | 'energy' | 'transport' | 'media' | 'overview' | 'zchpc';
 
@@ -22,6 +23,10 @@ const Index = () => {
   const { profile } = useAuth();
   const [activeSector, setActiveSector] = useState<SectorType>('overview');
   const [showEnhancedIncidents, setShowEnhancedIncidents] = useState(false);
+  
+  // Enable real-time updates
+  useRealtimeIncidents();
+  useRealtimeSecurityLogs();
 
   const renderDashboardContent = () => {
     if (showEnhancedIncidents) {

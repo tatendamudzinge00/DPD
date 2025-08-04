@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { RealTimeIncidents } from "./RealTimeIncidents";
+import { RealTimeSecurityLogs } from "./RealTimeSecurityLogs";
 import { 
   AlertTriangle, 
   Search, 
@@ -317,6 +319,12 @@ export function AnalystDashboard() {
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Real-time Dashboard Components */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <RealTimeIncidents />
+        <RealTimeSecurityLogs />
       </div>
 
       {/* Quick Sector Overview */}
