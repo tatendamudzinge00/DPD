@@ -42,10 +42,24 @@ const Auth = () => {
     setIsLoading(true);
     setError('');
 
-    const { error } = await signIn(email, password);
+    // Validation
+    if (!email.trim() || !password.trim()) {
+      setError('Please enter both email and password');
+      setIsLoading(false);
+      return;
+    }
+
+    const { error } = await signIn(email.trim(), password);
     
     if (error) {
-      setError(error.message);
+      // Provide user-friendly error messages
+      if (error.message.includes('Invalid login credentials')) {
+        setError('Invalid email or password. Please check your credentials and try again.');
+      } else if (error.message.includes('Email not confirmed')) {
+        setError('Please check your email and click the confirmation link before signing in.');
+      } else {
+        setError('Sign in failed. Please try again.');
+      }
     }
     
     setIsLoading(false);
@@ -56,23 +70,49 @@ const Auth = () => {
     setIsLoading(true);
     setError('');
 
+    // Validation
+    if (!fullName.trim()) {
+      setError('Please enter your full name');
+      setIsLoading(false);
+      return;
+    }
+
     if (!sector) {
       setError('Please select a sector');
       setIsLoading(false);
       return;
     }
 
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      setIsLoading(false);
+      return;
+    }
+
     const { error } = await signUp(email, password, {
-      full_name: fullName,
+      full_name: fullName.trim(),
       role,
       sector
     });
     
     if (error) {
-      setError(error.message);
+      // Provide user-friendly error messages
+      if (error.message.includes('already registered')) {
+        setError('An account with this email already exists. Please sign in instead.');
+      } else if (error.message.includes('password')) {
+        setError('Password must be at least 6 characters long');
+      } else if (error.message.includes('email')) {
+        setError('Please enter a valid email address');
+      } else {
+        setError('Failed to create account. Please try again.');
+      }
     } else {
       setError('');
-      // Switch to sign in tab after successful signup
+      // Clear form and switch to sign in tab
+      setEmail('');
+      setPassword('');
+      setFullName('');
+      setSector('');
       setActiveTab('signin');
     }
     

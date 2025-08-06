@@ -72,13 +72,14 @@ export function useAuth() {
   const signIn = async (email: string, password: string) => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: email.toLowerCase().trim(),
         password,
       });
       
       if (error) throw error;
       return { data, error: null };
     } catch (error: any) {
+      console.error('Sign in error:', error);
       return { data: null, error };
     }
   };
@@ -92,17 +93,22 @@ export function useAuth() {
       const redirectUrl = `${window.location.origin}/`;
       
       const { data, error } = await supabase.auth.signUp({
-        email,
+        email: email.toLowerCase().trim(),
         password,
         options: {
           emailRedirectTo: redirectUrl,
-          data: metadata
+          data: {
+            full_name: metadata.full_name,
+            role: metadata.role,
+            sector: metadata.sector
+          }
         }
       });
       
       if (error) throw error;
       return { data, error: null };
     } catch (error: any) {
+      console.error('Sign up error:', error);
       return { data: null, error };
     }
   };
