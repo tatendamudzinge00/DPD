@@ -48,7 +48,7 @@ export function DashboardHeader({
               className={showEnhancedIncidents ? "" : "border-slate-600 text-slate-300"}
             >
               <FileText className="h-4 w-4 mr-2" />
-              Enhanced Incidents
+              Compliance Monitor
             </Button>
           )}
 

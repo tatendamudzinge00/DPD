@@ -3,16 +3,10 @@ import React, { useState } from 'react';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { CyberSecuritySidebar } from "@/components/CyberSecuritySidebar";
 import { DashboardHeader } from "@/components/DashboardHeader";
-import { SectorOverview } from "@/components/SectorOverview";
-import { ThreatMap } from "@/components/ThreatMap";
-import { ThreatIntelligence } from "@/components/ThreatIntelligence";
-import { IncidentTracker } from "@/components/IncidentTracker";
-import { FeatureRequirements } from "@/components/FeatureRequirements";
+import { DataProtectionDashboard } from "@/components/DataProtectionDashboard";
+import { ComplianceMonitor } from "@/components/ComplianceMonitor";
 import { SectorDetail } from "@/components/SectorDetail";
-import { AdminDashboard } from "@/components/AdminDashboard";
-import { AnalystDashboard } from "@/components/AnalystDashboard";
-import { SectorLeadDashboard } from "@/components/SectorLeadDashboard";
-import { EnhancedIncidentTracker } from "@/components/EnhancedIncidentTracker";
+import { SectorOverview } from "@/components/SectorOverview";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useAuth } from '@/hooks/useAuth';
 import { useRealtimeIncidents, useRealtimeSecurityLogs } from "@/hooks/useSupabaseData";
@@ -30,7 +24,7 @@ const Index = () => {
 
   const renderDashboardContent = () => {
     if (showEnhancedIncidents) {
-      return <EnhancedIncidentTracker />;
+      return <ComplianceMonitor />;
     }
 
     if (!profile) return null;
@@ -38,30 +32,17 @@ const Index = () => {
     // Role-based dashboard rendering
     switch (profile.role) {
       case 'admin':
-        return <AdminDashboard />;
+        return <DataProtectionDashboard />;
       case 'analyst':
-        return <AnalystDashboard />;
+        return <DataProtectionDashboard />;
       case 'sector-lead':
-        return <SectorLeadDashboard sector={profile.sector} />;
+        return <DataProtectionDashboard />;
       default:
-        // Default overview dashboard for backward compatibility
-        if (activeSector === 'overview') {
-          return (
-            <>
-              <SectorOverview />
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                <ThreatMap />
-                <ThreatIntelligence />
-              </div>
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                <IncidentTracker />
-                <FeatureRequirements />
-              </div>
-            </>
-          );
-        } else {
+        // Sector-specific or overview dashboard
+        if (activeSector && activeSector !== 'overview') {
           return <SectorDetail sector={activeSector} />;
         }
+        return <SectorOverview />;
     }
   };
 
