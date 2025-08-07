@@ -79,7 +79,7 @@ class ApiService {
       timestamp: new Date().toISOString(),
       level: incident.severity === 'critical' ? 'critical' : 
              incident.severity === 'high' ? 'error' : 'warning',
-      source: 'ZIMCERT Dashboard',
+      source: 'Data Protection Dashboard',
       message: `New incident created: ${incident.title}`,
       category: incident.category,
       subcategory: incident.subcategory,

@@ -42,7 +42,7 @@ export function AdminDashboard() {
   ];
 
   const dataFeeds = [
-    { name: 'ZIMCERT Threat Feed', status: 'operational', lastSync: '2025-06-23 10:15', errors: 0 },
+    { name: 'Data Protection Feed', status: 'operational', lastSync: '2025-06-23 10:15', errors: 0 },
     { name: 'SIEM Connector', status: 'operational', lastSync: '2025-06-23 10:14', errors: 0 },
     { name: 'MISP Integration', status: 'warning', lastSync: '2025-06-23 09:45', errors: 3 },
     { name: 'Government SOC Feed', status: 'operational', lastSync: '2025-06-23 10:12', errors: 0 },

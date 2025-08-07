@@ -11,7 +11,7 @@ export function FeatureRequirements() {
       id: 1,
       icon: Zap,
       title: "Real-Time Threat Feed Engine",
-      description: "Pulls from ZIMCERT data lake, SIEM logs (Elastic, Splunk), IDS/IPS logs (Snort, Suricata), Threat intelligence feeds (MISP, CrowdStrike)",
+      description: "Pulls from data protection compliance systems, privacy monitoring logs, data breach detection systems, regulatory compliance feeds",
       status: "pending",
       priority: "high"
     },

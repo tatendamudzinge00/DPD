@@ -33,8 +33,8 @@ export function DashboardHeader({
           <div className="flex items-center space-x-2">
             <Shield className="h-6 w-6 text-blue-400" />
             <div>
-              <h1 className="text-lg font-bold text-white">ZIMCERT Dashboard</h1>
-              <p className="text-xs text-slate-400">National Cyber Security Operations</p>
+              <h1 className="text-lg font-bold text-white">Data Protection Dashboard</h1>
+              <p className="text-xs text-slate-400">Data Privacy & Compliance Operations</p>
             </div>
           </div>
         </div>

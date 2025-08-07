@@ -146,8 +146,8 @@ const Auth = () => {
           <div className="flex items-center justify-center mb-4">
             <Shield className="h-8 w-8 text-blue-400" />
           </div>
-          <CardTitle className="text-2xl text-white">ZIMCERT Dashboard</CardTitle>
-          <p className="text-slate-400">Secure access to cyber security operations</p>
+          <CardTitle className="text-2xl text-white">Data Protection Dashboard</CardTitle>
+          <p className="text-slate-400">Secure access to data protection operations</p>
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
