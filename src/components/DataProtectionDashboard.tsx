@@ -11,7 +11,7 @@ export function DataProtectionDashboard() {
   const [selectedTimeframe, setSelectedTimeframe] = useState<'24h' | '7d' | '30d'>('7d');
   const { data: incidents = [], isLoading } = useIncidents();
 
-  // Calculate real metrics from incidents data
+  // Real metrics from incidents data
   const totalIncidents = incidents.length;
   const openIncidents = incidents.filter(inc => inc.status === 'open').length;
   const criticalIncidents = incidents.filter(inc => inc.severity === 'critical').length;
@@ -54,9 +54,9 @@ export function DataProtectionDashboard() {
             <Scale className="h-4 w-4 text-green-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">94%</div>
-            <Progress value={94} className="mt-2" />
-            <p className="text-xs text-slate-400 mt-1">3 items need attention</p>
+            <div className="text-2xl font-bold text-white">--</div>
+            <Progress value={0} className="mt-2" />
+            <p className="text-xs text-slate-400 mt-1">No data available</p>
           </CardContent>
         </Card>
 
@@ -66,9 +66,9 @@ export function DataProtectionDashboard() {
             <UserCheck className="h-4 w-4 text-blue-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">12</div>
+            <div className="text-2xl font-bold text-white">0</div>
             <p className="text-xs text-slate-400">
-              8 pending, 4 completed this month
+              No requests recorded
             </p>
           </CardContent>
         </Card>
@@ -79,9 +79,9 @@ export function DataProtectionDashboard() {
             <FileCheck className="h-4 w-4 text-purple-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">87%</div>
-            <Progress value={87} className="mt-2" />
-            <p className="text-xs text-slate-400 mt-1">145 employees completed</p>
+            <div className="text-2xl font-bold text-white">--</div>
+            <Progress value={0} className="mt-2" />
+            <p className="text-xs text-slate-400 mt-1">No training data available</p>
           </CardContent>
         </Card>
       </div>
@@ -107,23 +107,10 @@ export function DataProtectionDashboard() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-300">Data Retention Policies</span>
-                    <Badge variant="secondary" className="bg-green-900 text-green-300">Compliant</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-300">Third-Party Processors</span>
-                    <Badge variant="secondary" className="bg-yellow-900 text-yellow-300">Review Needed</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-300">Consent Management</span>
-                    <Badge variant="secondary" className="bg-green-900 text-green-300">Compliant</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-300">Cross-Border Transfers</span>
-                    <Badge variant="secondary" className="bg-red-900 text-red-300">Non-Compliant</Badge>
-                  </div>
+                <div className="text-center py-8 text-slate-400">
+                  <Shield className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>No risk assessment data available</p>
+                  <p className="text-xs mt-2">Configure privacy risk parameters to view assessment</p>
                 </div>
               </CardContent>
             </Card>
@@ -137,35 +124,10 @@ export function DataProtectionDashboard() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-300">Customer Data</span>
-                    <div className="flex items-center space-x-2">
-                      <CheckCircle className="h-4 w-4 text-green-400" />
-                      <span className="text-slate-400">Mapped</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-300">Employee Data</span>
-                    <div className="flex items-center space-x-2">
-                      <CheckCircle className="h-4 w-4 text-green-400" />
-                      <span className="text-slate-400">Mapped</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-300">Third-Party Data</span>
-                    <div className="flex items-center space-x-2">
-                      <Clock className="h-4 w-4 text-yellow-400" />
-                      <span className="text-slate-400">In Progress</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-300">Legacy Systems</span>
-                    <div className="flex items-center space-x-2">
-                      <XCircle className="h-4 w-4 text-red-400" />
-                      <span className="text-slate-400">Not Mapped</span>
-                    </div>
-                  </div>
+                <div className="text-center py-8 text-slate-400">
+                  <Database className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>No data inventory available</p>
+                  <p className="text-xs mt-2">Start data mapping to track asset inventory</p>
                 </div>
               </CardContent>
             </Card>
@@ -180,31 +142,10 @@ export function DataProtectionDashboard() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-300">GDPR</span>
-                    <span className="text-white font-semibold">94%</span>
-                  </div>
-                  <Progress value={94} className="h-2" />
-                  <p className="text-xs text-slate-400">3 items pending</p>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-300">CCPA</span>
-                    <span className="text-white font-semibold">88%</span>
-                  </div>
-                  <Progress value={88} className="h-2" />
-                  <p className="text-xs text-slate-400">5 items pending</p>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-300">ISO 27001</span>
-                    <span className="text-white font-semibold">96%</span>
-                  </div>
-                  <Progress value={96} className="h-2" />
-                  <p className="text-xs text-slate-400">2 items pending</p>
-                </div>
+              <div className="text-center py-8 text-slate-400">
+                <Scale className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>No compliance framework data available</p>
+                <p className="text-xs mt-2">Configure compliance monitoring to track regulatory status</p>
               </div>
             </CardContent>
           </Card>
