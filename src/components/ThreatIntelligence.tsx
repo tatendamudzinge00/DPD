@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AlertTriangle, Shield, Activity, Clock, Loader2 } from "lucide-react";
-import { useThreatIntelligence } from "../hooks/useApiData";
+import { useThreatIntelligence } from "../hooks/useSupabaseDataProtection";
 
 export function ThreatIntelligence() {
   const { data: threats = [], isLoading, error } = useThreatIntelligence();
@@ -101,14 +101,23 @@ export function ThreatIntelligence() {
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center space-x-2">
                       {getSeverityIcon(threat.severity)}
-                      <span className="font-semibold text-white">{threat.type}</span>
-                      <Badge variant="secondary" className="text-xs">
-                        {threat.target}
-                      </Badge>
+                      <span className="font-semibold text-white">{threat.threat_type}</span>
+                      <div className="flex gap-1">
+                        {threat.affected_sectors.slice(0, 2).map((sector, idx) => (
+                          <Badge key={idx} variant="secondary" className="text-xs">
+                            {sector}
+                          </Badge>
+                        ))}
+                        {threat.affected_sectors.length > 2 && (
+                          <Badge variant="secondary" className="text-xs">
+                            +{threat.affected_sectors.length - 2}
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                     <div className="flex items-center space-x-1 text-slate-400 text-xs">
                       <Clock className="h-3 w-3" />
-                      <span>{getTimeAgo(threat.timestamp)}</span>
+                      <span>{getTimeAgo(threat.created_at)}</span>
                     </div>
                   </div>
                   
@@ -119,20 +128,20 @@ export function ThreatIntelligence() {
                       Source: <span className="text-blue-400">{threat.source}</span>
                     </div>
                     <div className="text-slate-400">
-                      IOCs: <span className="text-red-400">{threat.iocs?.length || 0}</span>
+                      IOCs: <span className="text-red-400">{threat.indicators_of_compromise?.length || 0}</span>
                     </div>
                   </div>
                   
-                  {threat.iocs && threat.iocs.length > 0 && (
+                  {threat.indicators_of_compromise && threat.indicators_of_compromise.length > 0 && (
                     <div className="mt-2 pt-2 border-t border-slate-600">
                       <div className="flex flex-wrap gap-1">
-                        {threat.iocs.slice(0, 2).map((ioc, index) => (
+                        {threat.indicators_of_compromise.slice(0, 2).map((ioc, index) => (
                           <code key={index} className="text-xs bg-slate-900 text-red-300 px-2 py-1 rounded">
                             {ioc}
                           </code>
                         ))}
-                        {threat.iocs.length > 2 && (
-                          <span className="text-xs text-slate-400">+{threat.iocs.length - 2} more</span>
+                        {threat.indicators_of_compromise.length > 2 && (
+                          <span className="text-xs text-slate-400">+{threat.indicators_of_compromise.length - 2} more</span>
                         )}
                       </div>
                     </div>

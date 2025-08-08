@@ -5,15 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { AlertTriangle, Shield, FileText, Users, Database, Clock, CheckCircle, XCircle, Calendar, Eye, Lock, UserCheck, FileCheck, Globe, Scale } from "lucide-react";
-import { useIncidents } from '@/hooks/useSupabaseData';
+import { useDataProtectionIncidents } from '../hooks/useSupabaseDataProtection';
 
 export function DataProtectionDashboard() {
   const [selectedTimeframe, setSelectedTimeframe] = useState<'24h' | '7d' | '30d'>('7d');
-  const { data: incidents = [], isLoading } = useIncidents();
+  const { data: incidents = [], isLoading } = useDataProtectionIncidents();
 
   // Real metrics from incidents data
   const totalIncidents = incidents.length;
-  const openIncidents = incidents.filter(inc => inc.status === 'open').length;
+  const openIncidents = incidents.filter(inc => inc.containment_status === 'ongoing' || inc.containment_status === 'uncontained').length;
   const criticalIncidents = incidents.filter(inc => inc.severity === 'critical').length;
   const highIncidents = incidents.filter(inc => inc.severity === 'high').length;
 
@@ -173,14 +173,14 @@ export function DataProtectionDashboard() {
                           incident.severity === 'medium' ? 'bg-yellow-400' : 'bg-green-400'
                         }`} />
                         <div>
-                          <p className="text-white font-medium">{incident.title}</p>
+                          <p className="text-white font-medium">{incident.incident_type}</p>
                           <p className="text-sm text-slate-400">
                             {incident.sector} • {new Date(incident.created_at).toLocaleDateString()}
                           </p>
                         </div>
                       </div>
-                      <Badge variant={incident.status === 'open' ? 'destructive' : 'secondary'}>
-                        {incident.status}
+                      <Badge variant={incident.containment_status === 'uncontained' ? 'destructive' : 'secondary'}>
+                        {incident.containment_status}
                       </Badge>
                     </div>
                   ))}

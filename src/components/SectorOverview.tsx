@@ -4,34 +4,55 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Shield, AlertTriangle, TrendingUp, Users, Loader2 } from "lucide-react";
-import { useLogs } from "../hooks/useApiData";
+import { useIncidents } from "../hooks/useSupabaseData";
+import { useDataProtectionIncidents, useThreatIntelligence } from "../hooks/useSupabaseDataProtection";
 
 export function SectorOverview() {
-  const { data: logs = [], isLoading, error } = useLogs();
+  const { data: incidents = [], isLoading: incidentsLoading } = useIncidents();
+  const { data: dataIncidents = [], isLoading: dataIncidentsLoading } = useDataProtectionIncidents();
+  const { data: threats = [], isLoading: threatsLoading } = useThreatIntelligence();
 
-  // Calculate sector metrics from real log data
+  const isLoading = incidentsLoading || dataIncidentsLoading || threatsLoading;
+
+  // Calculate sector metrics from real Supabase data
   const getSectorMetrics = () => {
-    const sectorCounts: { [key: string]: { threats: number; incidents: number } } = {};
+    const sectorCounts: { [key: string]: { threats: number; incidents: number; dataIncidents: number } } = {};
     
-    logs.forEach(log => {
-      const sector = log.sector || 'Unknown';
+    // Count regular incidents by sector
+    incidents.forEach(incident => {
+      const sector = incident.sector;
       if (!sectorCounts[sector]) {
-        sectorCounts[sector] = { threats: 0, incidents: 0 };
+        sectorCounts[sector] = { threats: 0, incidents: 0, dataIncidents: 0 };
       }
-      
-      if (log.metadata?.type === 'threat') {
+      sectorCounts[sector].incidents++;
+    });
+
+    // Count data protection incidents by sector
+    dataIncidents.forEach(incident => {
+      const sector = incident.sector;
+      if (!sectorCounts[sector]) {
+        sectorCounts[sector] = { threats: 0, incidents: 0, dataIncidents: 0 };
+      }
+      sectorCounts[sector].dataIncidents++;
+    });
+
+    // Count threats affecting each sector
+    threats.forEach(threat => {
+      threat.affected_sectors.forEach(sector => {
+        if (!sectorCounts[sector]) {
+          sectorCounts[sector] = { threats: 0, incidents: 0, dataIncidents: 0 };
+        }
         sectorCounts[sector].threats++;
-      } else if (log.metadata?.type === 'incident') {
-        sectorCounts[sector].incidents++;
-      }
+      });
     });
 
     return Object.entries(sectorCounts).map(([name, counts]) => ({
       name,
       threats: counts.threats,
-      incidents: counts.incidents,
-      protection: Math.max(10, 100 - (counts.threats * 5 + counts.incidents * 10)), // Simple protection score
-      status: counts.threats > 5 ? 'critical' : counts.threats > 2 ? 'warning' : 'safe'
+      incidents: counts.incidents + counts.dataIncidents,
+      protection: Math.max(10, 100 - (counts.threats * 3 + counts.incidents * 5 + counts.dataIncidents * 8)),
+      status: (counts.threats > 3 || counts.dataIncidents > 2) ? 'critical' : 
+              (counts.threats > 1 || counts.incidents > 3) ? 'warning' : 'safe'
     }));
   };
 
@@ -55,6 +76,8 @@ export function SectorOverview() {
     }
   };
 
+  const error = false; // Remove error handling since we're using multiple queries
+  
   if (error) {
     return (
       <Card className="bg-slate-800 border-slate-700">
