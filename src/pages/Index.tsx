@@ -7,11 +7,13 @@ import { DataProtectionDashboard } from "@/components/DataProtectionDashboard";
 import { ComplianceMonitor } from "@/components/ComplianceMonitor";
 import { SectorDetail } from "@/components/SectorDetail";
 import { SectorOverview } from "@/components/SectorOverview";
+import SecurityAnalyticsDashboard from "@/components/SecurityAnalyticsDashboard";
+import ThreatMapDashboard from "@/components/ThreatMapDashboard";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useAuth } from '@/hooks/useAuth';
 import { useRealtimeIncidents, useRealtimeSecurityLogs } from "@/hooks/useSupabaseData";
 
-export type SectorType = 'government' | 'banking' | 'private' | 'education' | 'industrial' | 'telecoms' | 'health' | 'energy' | 'transport' | 'media' | 'overview' | 'zchpc';
+export type SectorType = 'government' | 'banking' | 'private' | 'education' | 'industrial' | 'telecoms' | 'health' | 'energy' | 'transport' | 'media' | 'overview' | 'zchpc' | 'analytics' | 'threat-map';
 
 const Index = () => {
   const { profile } = useAuth();
@@ -25,6 +27,14 @@ const Index = () => {
   const renderDashboardContent = () => {
     if (showEnhancedIncidents) {
       return <ComplianceMonitor />;
+    }
+
+    if (activeSector === 'analytics') {
+      return <SecurityAnalyticsDashboard />;
+    }
+
+    if (activeSector === 'threat-map') {
+      return <ThreatMapDashboard />;
     }
 
     if (!profile) return null;
