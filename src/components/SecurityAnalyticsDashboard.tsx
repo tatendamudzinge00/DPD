@@ -1,13 +1,13 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { useQuery } from '@tanstack/react-query';
+import { Tabs, TabsContent, anstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
 import { Loader2, TrendingUp, Shield, AlertTriangle, Database } from 'lucide-react';
-
-const COLORS = ['hsl(var(--primary))', 'hsl(var(--secondary))', 'hsl(var(--accent))', 'hsl(var(--muted))', '#8884d8', '#82ca9d', '#ffc658', '#ff7300'];
+TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/compoents/ui/badge';
+import { useQuery } from '@t
+const COLORS = ['hsl(var(--primary))', 'hsln(var(--secondary))', 'hsl(var(--accent))', 'hsl(var(--muted))', '#8884d8', '#82ca9d', '#ffc658', '#ff7300'];
 
 // Security Logs Analytics
 const useSecurityLogsAnalytics = () => {
