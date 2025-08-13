@@ -57,6 +57,21 @@ export function CyberSecuritySidebar({ activeSector, setActiveSector }: CyberSec
     }
   };
 
+  // Filter sectors based on user role and sector
+  const getVisibleSectors = () => {
+    if (!profile) return [];
+    
+    // Admins see all sectors (National Overview)
+    if (profile.role === 'admin') {
+      return sectors;
+    }
+    
+    // Sector-specific users only see their sector
+    return sectors.filter(sector => sector.id === profile.sector || sector.id === 'overview');
+  };
+
+  const visibleSectors = getVisibleSectors();
+
   return (
     <Sidebar className="border-r border-slate-800 bg-slate-900" collapsible="icon">
       <SidebarHeader className="border-b border-slate-800 p-4">
@@ -99,15 +114,15 @@ export function CyberSecuritySidebar({ activeSector, setActiveSector }: CyberSec
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* Sector Dashboard - Only show on main dashboard */}
-        {location.pathname === '/' && (
+        {/* Sector Dashboard - Only show on main dashboard with filtered sectors */}
+        {location.pathname === '/' && visibleSectors.length > 0 && (
           <SidebarGroup>
             <SidebarGroupLabel className="text-slate-300 font-semibold mb-4 group-data-[collapsible=icon]:hidden">
-              Quick Access
+              {profile?.role === 'admin' ? 'Quick Access' : 'My Sector'}
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu className="space-y-1">
-                {sectors.map((sector) => (
+                {visibleSectors.map((sector) => (
                   <SidebarMenuItem key={sector.id}>
                     <SidebarMenuButton
                       onClick={() => setActiveSector(sector.id as SectorType)}
