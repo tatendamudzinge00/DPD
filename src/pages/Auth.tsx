@@ -99,6 +99,8 @@ const Auth = () => {
       // Provide user-friendly error messages
       if (error.message.includes('already registered')) {
         setError('An account with this email already exists. Please sign in instead.');
+      } else if (error.message.includes('captcha verification process failed')) {
+        setError('Account creation is currently disabled due to security settings. Please contact support.');
       } else if (error.message.includes('password')) {
         setError('Password must be at least 6 characters long');
       } else if (error.message.includes('email')) {
