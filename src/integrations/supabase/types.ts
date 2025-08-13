@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      data_subject_requests: {
+        Row: {
+          assigned_to: string | null
+          completed_at: string | null
+          created_at: string
+          description: string | null
+          email: string
+          id: string
+          metadata: Json | null
+          notes: string | null
+          priority: string
+          request_type: string
+          requester_name: string | null
+          sector: string
+          status: string
+          submitted_at: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          email: string
+          id?: string
+          metadata?: Json | null
+          notes?: string | null
+          priority?: string
+          request_type: string
+          requester_name?: string | null
+          sector: string
+          status?: string
+          submitted_at?: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          email?: string
+          id?: string
+          metadata?: Json | null
+          notes?: string | null
+          priority?: string
+          request_type?: string
+          requester_name?: string | null
+          sector?: string
+          status?: string
+          submitted_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       incidents: {
         Row: {
           created_at: string

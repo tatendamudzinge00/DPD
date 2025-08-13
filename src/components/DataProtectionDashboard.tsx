@@ -6,16 +6,66 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { AlertTriangle, Shield, FileText, Users, Database, Clock, CheckCircle, XCircle, Calendar, Eye, Lock, UserCheck, FileCheck, Globe, Scale } from "lucide-react";
 import { useDataProtectionIncidents } from '../hooks/useSupabaseDataProtection';
+import { useDataSubjectRequests, useRealtimeDataSubjectRequests, useUpdateDataSubjectRequest } from '../hooks/useDataSubjectRequests';
+import { DataSubjectRequestForm } from './DataSubjectRequestForm';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export function DataProtectionDashboard() {
   const [selectedTimeframe, setSelectedTimeframe] = useState<'24h' | '7d' | '30d'>('7d');
   const { data: incidents = [], isLoading } = useDataProtectionIncidents();
+  const { data: requests = [], isLoading: requestsLoading } = useDataSubjectRequests();
+  const updateRequest = useUpdateDataSubjectRequest();
+  
+  // Setup real-time subscriptions
+  useRealtimeDataSubjectRequests();
 
   // Real metrics from incidents data
   const totalIncidents = incidents.length;
   const openIncidents = incidents.filter(inc => inc.containment_status === 'ongoing' || inc.containment_status === 'uncontained').length;
   const criticalIncidents = incidents.filter(inc => inc.severity === 'critical').length;
   const highIncidents = incidents.filter(inc => inc.severity === 'high').length;
+
+  // Real metrics from requests data
+  const totalRequests = requests.length;
+  const pendingRequests = requests.filter(req => req.status === 'processing' || req.status === 'under_review').length;
+  const completedRequests = requests.filter(req => req.status === 'completed').length;
+
+  const getRequestTypeIcon = (type: string) => {
+    switch (type) {
+      case 'data_access': return <Eye className="h-4 w-4 text-blue-400" />;
+      case 'data_deletion': return <XCircle className="h-4 w-4 text-red-400" />;
+      case 'data_portability': return <FileText className="h-4 w-4 text-green-400" />;
+      case 'data_rectification': return <FileCheck className="h-4 w-4 text-yellow-400" />;
+      case 'data_restriction': return <Lock className="h-4 w-4 text-purple-400" />;
+      case 'objection': return <XCircle className="h-4 w-4 text-orange-400" />;
+      default: return <FileText className="h-4 w-4 text-slate-400" />;
+    }
+  };
+
+  const getRequestTypeName = (type: string) => {
+    switch (type) {
+      case 'data_access': return 'Data Access Request';
+      case 'data_deletion': return 'Data Deletion Request';
+      case 'data_portability': return 'Data Portability Request';
+      case 'data_rectification': return 'Data Rectification Request';
+      case 'data_restriction': return 'Data Processing Restriction';
+      case 'objection': return 'Objection to Processing';
+      default: return type;
+    }
+  };
+
+  const handleStatusUpdate = async (requestId: string, newStatus: string) => {
+    try {
+      const updateData: any = { status: newStatus };
+      if (newStatus === 'completed') {
+        updateData.completed_at = new Date().toISOString();
+      }
+      await updateRequest.mutateAsync({ id: requestId, ...updateData });
+    } catch (error) {
+      console.error('Failed to update request status:', error);
+    }
+  };
 
   return (
     <div className="space-y-6 p-6">
@@ -66,9 +116,9 @@ export function DataProtectionDashboard() {
             <UserCheck className="h-4 w-4 text-blue-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">0</div>
+            <div className="text-2xl font-bold text-white">{totalRequests}</div>
             <p className="text-xs text-slate-400">
-              No requests recorded
+              {pendingRequests} pending, {completedRequests} completed
             </p>
           </CardContent>
         </Card>
@@ -260,44 +310,99 @@ export function DataProtectionDashboard() {
         <TabsContent value="requests" className="space-y-4">
           <Card className="bg-slate-800 border-slate-700">
             <CardHeader>
-              <CardTitle className="text-white">Data Subject Rights Requests</CardTitle>
-              <CardDescription className="text-slate-400">
-                GDPR Article 15-22 requests and processing status
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-white">Data Subject Rights Requests</CardTitle>
+                  <CardDescription className="text-slate-400">
+                    GDPR Article 15-22 requests and processing status
+                  </CardDescription>
+                </div>
+                <DataSubjectRequestForm />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <Eye className="h-4 w-4 text-blue-400" />
-                    <div>
-                      <p className="text-white font-medium">Data Access Request</p>
-                      <p className="text-sm text-slate-400">john.doe@example.com • Submitted 3 days ago</p>
-                    </div>
-                  </div>
-                  <Badge variant="secondary" className="bg-yellow-900 text-yellow-300">Processing</Badge>
+              {requestsLoading ? (
+                <div className="text-slate-400 text-center py-8">Loading requests...</div>
+              ) : totalRequests > 0 ? (
+                <div className="space-y-4">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="border-slate-700 hover:bg-slate-700/50">
+                        <TableHead className="text-slate-300">Type</TableHead>
+                        <TableHead className="text-slate-300">Email</TableHead>
+                        <TableHead className="text-slate-300">Priority</TableHead>
+                        <TableHead className="text-slate-300">Status</TableHead>
+                        <TableHead className="text-slate-300">Submitted</TableHead>
+                        <TableHead className="text-slate-300">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {requests.map((request) => (
+                        <TableRow key={request.id} className="border-slate-700 hover:bg-slate-700/50">
+                          <TableCell className="font-medium">
+                            <div className="flex items-center space-x-2">
+                              {getRequestTypeIcon(request.request_type)}
+                              <span className="text-white">{getRequestTypeName(request.request_type)}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-slate-300">
+                            <div>
+                              <p>{request.email}</p>
+                              {request.requester_name && (
+                                <p className="text-xs text-slate-400">{request.requester_name}</p>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={
+                              request.priority === 'urgent' ? 'destructive' :
+                              request.priority === 'high' ? 'default' :
+                              'secondary'
+                            }>
+                              {request.priority}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Select
+                              value={request.status}
+                              onValueChange={(value) => handleStatusUpdate(request.id, value)}
+                            >
+                              <SelectTrigger className="w-[130px] bg-slate-700 border-slate-600 text-white">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent className="bg-slate-700 border-slate-600">
+                                <SelectItem value="processing">Processing</SelectItem>
+                                <SelectItem value="under_review">Under Review</SelectItem>
+                                <SelectItem value="completed">Completed</SelectItem>
+                                <SelectItem value="rejected">Rejected</SelectItem>
+                                <SelectItem value="on_hold">On Hold</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
+                          <TableCell className="text-slate-400">
+                            {new Date(request.submitted_at).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center space-x-2">
+                              {request.completed_at && (
+                                <span className="text-xs text-green-400">
+                                  Completed {new Date(request.completed_at).toLocaleDateString()}
+                                </span>
+                              )}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <XCircle className="h-4 w-4 text-red-400" />
-                    <div>
-                      <p className="text-white font-medium">Data Deletion Request</p>
-                      <p className="text-sm text-slate-400">sara.smith@example.com • Submitted 1 week ago</p>
-                    </div>
-                  </div>
-                  <Badge variant="secondary" className="bg-green-900 text-green-300">Completed</Badge>
+              ) : (
+                <div className="text-center py-8 text-slate-400">
+                  <UserCheck className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>No data subject requests submitted</p>
+                  <p className="text-xs mt-2">Use the "New Request" button to create your first request</p>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <FileText className="h-4 w-4 text-green-400" />
-                    <div>
-                      <p className="text-white font-medium">Data Portability Request</p>
-                      <p className="text-sm text-slate-400">mike.johnson@example.com • Submitted 2 days ago</p>
-                    </div>
-                  </div>
-                  <Badge variant="secondary" className="bg-blue-900 text-blue-300">Under Review</Badge>
-                </div>
-              </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
