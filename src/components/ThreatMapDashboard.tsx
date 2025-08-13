@@ -96,7 +96,7 @@ const useThreatActivityFeed = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from('security_logs')
-        .select('src_ip, dst_ip, severity, event_type, created_at, source_tool, metadata')
+        .select('severity, event_type, created_at, source, metadata')
         .order('created_at', { ascending: false })
         .limit(50);
 
@@ -299,13 +299,13 @@ export default function ThreatMapDashboard() {
                   <h4 className="font-medium mb-2">Severity Breakdown</h4>
                   <div className="space-y-2">
                     {Object.entries(selectedCountryData.severityBreakdown).map(([severity, count]) => (
-                      count > 0 && (
+                      (count as number) > 0 && (
                         <div key={severity} className="flex items-center justify-between">
                           <div className="flex items-center space-x-2">
                             <div className={`w-3 h-3 rounded ${getSeverityColor(severity)}`} />
                             <span className="capitalize">{severity}</span>
                           </div>
-                          <Badge variant="outline">{count}</Badge>
+                          <Badge variant="outline">{count as number}</Badge>
                         </div>
                       )
                     ))}
@@ -321,7 +321,7 @@ export default function ThreatMapDashboard() {
                       .map(([eventType, count]) => (
                         <div key={eventType} className="flex justify-between text-sm">
                           <span>{eventType}</span>
-                          <span className="text-muted-foreground">{count}</span>
+                          <span className="text-muted-foreground">{count as number}</span>
                         </div>
                       ))
                     }
