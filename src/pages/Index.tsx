@@ -9,11 +9,13 @@ import { SectorDetail } from "@/components/SectorDetail";
 import { SectorOverview } from "@/components/SectorOverview";
 import SecurityAnalyticsDashboard from "@/components/SecurityAnalyticsDashboard";
 import ThreatMapDashboard from "@/components/ThreatMapDashboard";
+import IncidentReportingPanel from "@/components/IncidentReportingPanel";
+import InteractiveSecurityMap from "@/components/InteractiveSecurityMap";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useAuth } from '@/hooks/useAuth';
 import { useRealtimeIncidents, useRealtimeSecurityLogs } from "@/hooks/useSupabaseData";
 
-export type SectorType = 'government' | 'banking' | 'private' | 'education' | 'industrial' | 'telecoms' | 'health' | 'energy' | 'transport' | 'media' | 'overview' | 'zchpc' | 'analytics' | 'threat-map';
+export type SectorType = 'government' | 'banking' | 'private' | 'education' | 'industrial' | 'telecoms' | 'health' | 'energy' | 'transport' | 'media' | 'overview' | 'zchpc' | 'analytics' | 'threat-map' | 'incident-reporting' | 'security-map';
 
 const Index = () => {
   const { profile } = useAuth();
@@ -35,6 +37,14 @@ const Index = () => {
 
     if (activeSector === 'threat-map') {
       return <ThreatMapDashboard />;
+    }
+
+    if (activeSector === 'incident-reporting') {
+      return <IncidentReportingPanel />;
+    }
+
+    if (activeSector === 'security-map') {
+      return <InteractiveSecurityMap />;
     }
 
     if (!profile) return null;
