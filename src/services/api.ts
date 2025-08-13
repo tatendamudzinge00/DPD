@@ -1,6 +1,6 @@
 
 // API service for connecting to the backend server
-const API_BASE_URL = 'http://10.50.13.217:8080';
+const API_BASE_URL = 'https://10.50.13.217:8080';
 
 export interface LogEntry {
   id?: string;
