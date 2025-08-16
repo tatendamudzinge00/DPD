@@ -35,18 +35,19 @@ export function useAuth() {
   };
 
   useEffect(() => {
+    let mounted = true;
+
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        if (!mounted) return;
+        
         setSession(session);
         setUser(session?.user ?? null);
         
-        if (session?.user) {
-          // Fetch profile after setting session
-          setTimeout(() => {
-            fetchProfile(session.user.id);
-          }, 0);
-        } else {
+        if (session?.user && !profile) {
+          await fetchProfile(session.user.id);
+        } else if (!session?.user) {
           setProfile(null);
         }
         
@@ -55,19 +56,27 @@ export function useAuth() {
     );
 
     // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const initAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!mounted) return;
+      
       setSession(session);
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        fetchProfile(session.user.id);
+        await fetchProfile(session.user.id);
       }
       
       setLoading(false);
-    });
+    };
 
-    return () => subscription.unsubscribe();
-  }, []);
+    initAuth();
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, [profile]);
 
   const signIn = async (email: string, password: string) => {
     try {
