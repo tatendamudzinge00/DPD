@@ -76,7 +76,7 @@ export function useAuth() {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [profile]);
+  }, []);
 
   const signIn = async (email: string, password: string) => {
     try {
