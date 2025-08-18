@@ -101,8 +101,10 @@ const Auth = () => {
         setError('An account with this email already exists. Please sign in instead.');
       } else if (error.message.includes('captcha verification process failed')) {
         setError('Account creation is currently disabled due to security settings. Please contact support.');
+      } else if (error.message.includes('Password should contain at least one character of each') || error.code === 'weak_password') {
+        setError('Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character (!@#$%^&*()_+-=[]{};\':\"|<>?,./`~)');
       } else if (error.message.includes('password')) {
-        setError('Password must be at least 6 characters long');
+        setError('Password requirements not met. Please ensure your password is strong enough.');
       } else if (error.message.includes('email')) {
         setError('Please enter a valid email address');
       } else {
@@ -241,6 +243,9 @@ const Auth = () => {
                     required
                     minLength={6}
                   />
+                  <p className="text-xs text-slate-400">
+                    Must contain: lowercase, uppercase, number, and special character
+                  </p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signup-role" className="text-slate-300">Role</Label>
