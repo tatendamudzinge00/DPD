@@ -42,11 +42,10 @@ export function useAuth() {
 
   useEffect(() => {
     let mounted = true;
-    let profileFetched = false;
 
     console.log('Auth hook initializing...');
 
-    // Set up auth state listener
+    // Set up auth state listener first
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth state change:', event, session?.user?.id);
@@ -56,30 +55,22 @@ export function useAuth() {
         setSession(session);
         setUser(session?.user ?? null);
         
-        if (session?.user && !profileFetched) {
-          profileFetched = true;
+        if (session?.user) {
           await fetchProfile(session.user.id);
-        } else if (!session?.user) {
+        } else {
           setProfile(null);
-          profileFetched = false;
         }
         
         setLoading(false);
       }
     );
 
-    // Check for existing session with timeout
+    // Get initial session without timeout
     const initAuth = async () => {
       try {
         console.log('Getting initial session...');
         
-        // Add a timeout to prevent hanging
-        const sessionPromise = supabase.auth.getSession();
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Session timeout')), 5000)
-        );
-        
-        const { data: { session } } = await Promise.race([sessionPromise, timeoutPromise]) as any;
+        const { data: { session } } = await supabase.auth.getSession();
         
         if (!mounted) return;
         
@@ -88,8 +79,7 @@ export function useAuth() {
         setSession(session);
         setUser(session?.user ?? null);
         
-        if (session?.user && !profileFetched) {
-          profileFetched = true;
+        if (session?.user) {
           await fetchProfile(session.user.id);
         }
         
