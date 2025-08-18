@@ -42,13 +42,15 @@ export function useAuth() {
 
   useEffect(() => {
     let mounted = true;
+    let initializing = false;
 
-    console.log('Auth hook initializing...');
+    const initializeAuth = async () => {
+      if (initializing) return;
+      initializing = true;
 
-    // Set up auth state listener first
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log('Auth state change:', event, session?.user?.id);
+      try {
+        // Get initial session first
+        const { data: { session } } = await supabase.auth.getSession();
         
         if (!mounted) return;
         
@@ -62,28 +64,6 @@ export function useAuth() {
         }
         
         setLoading(false);
-      }
-    );
-
-    // Get initial session without timeout
-    const initAuth = async () => {
-      try {
-        console.log('Getting initial session...');
-        
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (!mounted) return;
-        
-        console.log('Initial session:', session?.user?.id);
-        
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (session?.user) {
-          await fetchProfile(session.user.id);
-        }
-        
-        setLoading(false);
       } catch (error) {
         console.error('Auth initialization error:', error);
         if (mounted) {
@@ -92,10 +72,32 @@ export function useAuth() {
       }
     };
 
-    initAuth();
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (!mounted) return;
+        
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user && event !== 'TOKEN_REFRESHED') {
+          // Only fetch profile on actual sign in, not token refresh
+          setTimeout(() => {
+            if (mounted) {
+              fetchProfile(session.user.id);
+            }
+          }, 0);
+        } else if (!session?.user) {
+          setProfile(null);
+        }
+        
+        setLoading(false);
+      }
+    );
+
+    initializeAuth();
 
     return () => {
-      console.log('Auth hook cleanup');
       mounted = false;
       subscription.unsubscribe();
     };
