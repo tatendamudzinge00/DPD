@@ -11,10 +11,11 @@ import { Shield, UserPlus, LogIn } from "lucide-react";
 import { useAuth } from '@/hooks/useAuth';
 
 const Auth = () => {
-  const { user, loading, signIn, signUp } = useAuth();
+  const { user, loading, signIn, signUp, resetPassword } = useAuth();
   const [activeTab, setActiveTab] = useState('signin');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [resetMessage, setResetMessage] = useState('');
 
   // Form states
   const [email, setEmail] = useState('');
@@ -22,6 +23,7 @@ const Auth = () => {
   const [fullName, setFullName] = useState('');
   const [role, setRole] = useState<'admin' | 'analyst' | 'sector-lead'>('analyst');
   const [sector, setSector] = useState('');
+  const [resetEmail, setResetEmail] = useState('');
 
   // If user is already authenticated, redirect to dashboard
   if (user && !loading) {
@@ -123,6 +125,30 @@ const Auth = () => {
     setIsLoading(false);
   };
 
+  const handlePasswordReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+    setResetMessage('');
+
+    if (!resetEmail.trim()) {
+      setError('Please enter your email address');
+      setIsLoading(false);
+      return;
+    }
+
+    const { error } = await resetPassword(resetEmail.trim());
+    
+    if (error) {
+      setError('Failed to send password reset email. Please check your email address and try again.');
+    } else {
+      setResetMessage('Password reset email sent! Check your inbox and click the link to reset your password.');
+      setResetEmail('');
+    }
+    
+    setIsLoading(false);
+  };
+
   const sectors = [
     { value: 'government', label: 'Government' },
     { value: 'banking', label: 'Banking & Financial Services' },
@@ -155,7 +181,7 @@ const Auth = () => {
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-2 bg-slate-700">
+            <TabsList className="grid w-full grid-cols-3 bg-slate-700">
               <TabsTrigger value="signin" className="text-slate-300">
                 <LogIn className="h-4 w-4 mr-2" />
                 Sign In
@@ -164,12 +190,23 @@ const Auth = () => {
                 <UserPlus className="h-4 w-4 mr-2" />
                 Sign Up
               </TabsTrigger>
+              <TabsTrigger value="reset" className="text-slate-300">
+                Reset
+              </TabsTrigger>
             </TabsList>
 
             {error && (
               <Alert className="mt-4 border-red-600 bg-red-950">
                 <AlertDescription className="text-red-300">
                   {error}
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {resetMessage && (
+              <Alert className="mt-4 border-green-600 bg-green-950">
+                <AlertDescription className="text-green-300">
+                  {resetMessage}
                 </AlertDescription>
               </Alert>
             )}
@@ -283,6 +320,33 @@ const Auth = () => {
                   disabled={isLoading}
                 >
                   {isLoading ? 'Creating Account...' : 'Create Account'}
+                </Button>
+              </form>
+            </TabsContent>
+
+            <TabsContent value="reset">
+              <form onSubmit={handlePasswordReset} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="reset-email" className="text-slate-300">Email</Label>
+                  <Input
+                    id="reset-email"
+                    type="email"
+                    value={resetEmail}
+                    onChange={(e) => setResetEmail(e.target.value)}
+                    className="bg-slate-700 border-slate-600 text-white"
+                    placeholder="Enter your email address"
+                    required
+                  />
+                  <p className="text-xs text-slate-400">
+                    We'll send you a link to reset your password
+                  </p>
+                </div>
+                <Button 
+                  type="submit" 
+                  className="w-full" 
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Sending...' : 'Send Reset Email'}
                 </Button>
               </form>
             </TabsContent>
