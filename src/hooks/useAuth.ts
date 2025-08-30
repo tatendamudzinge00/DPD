@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -18,8 +18,25 @@ export function useAuth() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // De-dupe profile fetches across re-renders
+  const fetchingProfileRef = useRef(false);
+  const lastFetchedUserIdRef = useRef<string | null>(null);
+  const lastFetchedAtRef = useRef<number>(0);
+
   const fetchProfile = async (userId: string) => {
     try {
+      // De-dupe rapid repeat calls
+      const now = Date.now();
+      if (
+        (lastFetchedUserIdRef.current === userId && now - lastFetchedAtRef.current < 5000) ||
+        fetchingProfileRef.current
+      ) {
+        return;
+      }
+      fetchingProfileRef.current = true;
+      lastFetchedUserIdRef.current = userId;
+      lastFetchedAtRef.current = now;
+
       console.log('Fetching profile for user:', userId);
       const { data, error } = await supabase
         .from('profiles')
@@ -37,6 +54,8 @@ export function useAuth() {
     } catch (error) {
       console.error('Error fetching profile:', error);
       setProfile(null);
+    } finally {
+      fetchingProfileRef.current = false;
     }
   };
 

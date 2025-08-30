@@ -52,14 +52,20 @@ const Auth = () => {
       return;
     }
 
-    const { error } = await signIn(email.trim(), password);
+    const timeout = new Promise<{ error: any }>((resolve) =>
+      setTimeout(() => resolve({ error: new Error('Request timed out. Please try again.') }), 15000)
+    );
+    const result = await Promise.race([signIn(email.trim(), password), timeout]);
+    const { error } = result as { error: any };
     
     if (error) {
       // Provide user-friendly error messages
-      if (error.message.includes('Invalid login credentials')) {
+      if (typeof error.message === 'string' && error.message.includes('Invalid login credentials')) {
         setError('Invalid email or password. Please check your credentials and try again.');
-      } else if (error.message.includes('Email not confirmed')) {
+      } else if (typeof error.message === 'string' && error.message.includes('Email not confirmed')) {
         setError('Please check your email and click the confirmation link before signing in.');
+      } else if (String(error).includes('timed out')) {
+        setError('Network seems slow. Please try again.');
       } else {
         setError('Sign in failed. Please try again.');
       }
