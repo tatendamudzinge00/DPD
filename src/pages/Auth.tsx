@@ -11,11 +11,12 @@ import { Shield, UserPlus, LogIn } from "lucide-react";
 import { useAuth } from '@/hooks/useAuth';
 
 const Auth = () => {
-  const { user, loading, signIn, signUp, resetPassword } = useAuth();
+  const { user, loading, signIn, signUp, resetPassword, resendVerificationEmail } = useAuth();
   const [activeTab, setActiveTab] = useState('signin');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [resetMessage, setResetMessage] = useState('');
+  const [signupSuccess, setSignupSuccess] = useState('');
 
   // Form states
   const [email, setEmail] = useState('');
@@ -114,12 +115,11 @@ const Auth = () => {
       }
     } else {
       setError('');
-      // Clear form and switch to sign in tab
-      setEmail('');
-      setPassword('');
+      setSignupSuccess(`Account created successfully! Please check your email at ${email} and click the confirmation link to activate your account.`);
+      // Clear form but stay on signup tab to show success message
       setFullName('');
+      setPassword('');
       setSector('');
-      setActiveTab('signin');
     }
     
     setIsLoading(false);
@@ -207,6 +207,14 @@ const Auth = () => {
               <Alert className="mt-4 border-green-600 bg-green-950">
                 <AlertDescription className="text-green-300">
                   {resetMessage}
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {signupSuccess && (
+              <Alert className="mt-4 border-green-600 bg-green-950">
+                <AlertDescription className="text-green-300">
+                  {signupSuccess}
                 </AlertDescription>
               </Alert>
             )}
@@ -321,6 +329,29 @@ const Auth = () => {
                 >
                   {isLoading ? 'Creating Account...' : 'Create Account'}
                 </Button>
+                
+                {signupSuccess && (
+                  <div className="mt-4 space-y-2">
+                    <Button 
+                      type="button"
+                      variant="outline"
+                      className="w-full bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600"
+                      onClick={async () => {
+                        setIsLoading(true);
+                        const { error } = await resendVerificationEmail(email);
+                        if (error) {
+                          setError('Failed to resend verification email. Please try again.');
+                        } else {
+                          setSignupSuccess('Verification email resent! Please check your inbox.');
+                        }
+                        setIsLoading(false);
+                      }}
+                      disabled={isLoading || !email}
+                    >
+                      Resend Verification Email
+                    </Button>
+                  </div>
+                )}
               </form>
             </TabsContent>
 

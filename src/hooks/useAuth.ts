@@ -161,6 +161,24 @@ export function useAuth() {
     }
   };
 
+  const resendVerificationEmail = async (email: string) => {
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email.toLowerCase().trim(),
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+        }
+      });
+      
+      if (error) throw error;
+      return { error: null };
+    } catch (error: any) {
+      console.error('Resend verification error:', error);
+      return { error };
+    }
+  };
+
   const signOut = async () => {
     try {
       const { error } = await supabase.auth.signOut();
@@ -185,5 +203,6 @@ export function useAuth() {
     signUp,
     signOut,
     resetPassword,
+    resendVerificationEmail,
   };
 }
