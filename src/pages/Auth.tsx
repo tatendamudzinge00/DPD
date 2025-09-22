@@ -25,6 +25,11 @@ const Auth = () => {
   const [role, setRole] = useState<'admin' | 'analyst' | 'sector-lead'>('analyst');
   const [sector, setSector] = useState('');
   const [resetEmail, setResetEmail] = useState('');
+  
+  // Verification code states
+  const [verificationCode, setVerificationCode] = useState('');
+  const [verificationStep, setVerificationStep] = useState(false);
+  const [verificationEmail, setVerificationEmail] = useState('');
 
   // If user is already authenticated, redirect to dashboard
   if (user && !loading) {
@@ -74,6 +79,52 @@ const Auth = () => {
     setIsLoading(false);
   };
 
+  const sendVerificationEmail = async (emailAddress: string) => {
+    try {
+      const response = await fetch('https://khzrlovbtthmdifagrvo.supabase.co/functions/v1/send-verification-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: emailAddress })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send verification email');
+      }
+      
+      return { success: true };
+    } catch (error) {
+      console.error('Send verification email error:', error);
+      return { error: error instanceof Error ? error.message : 'Failed to send verification email' };
+    }
+  };
+
+  const verifyEmailCode = async (emailAddress: string, code: string) => {
+    try {
+      const response = await fetch('https://khzrlovbtthmdifagrvo.supabase.co/functions/v1/verify-email-code', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: emailAddress, code })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to verify code');
+      }
+      
+      return { success: true, valid: data.valid };
+    } catch (error) {
+      console.error('Verify email code error:', error);
+      return { error: error instanceof Error ? error.message : 'Failed to verify code' };
+    }
+  };
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -98,6 +149,44 @@ const Auth = () => {
       return;
     }
 
+    // Send verification email first
+    const { error: emailError } = await sendVerificationEmail(email);
+    
+    if (emailError) {
+      setError('Failed to send verification email. Please try again.');
+      setIsLoading(false);
+      return;
+    }
+
+    // Move to verification step
+    setVerificationEmail(email);
+    setVerificationStep(true);
+    setError('');
+    setSignupSuccess(`Verification code sent to ${email}. Please check your email and enter the 6-digit code below.`);
+    setIsLoading(false);
+  };
+
+  const handleVerifyCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+
+    if (verificationCode.length !== 6) {
+      setError('Please enter a 6-digit verification code');
+      setIsLoading(false);
+      return;
+    }
+
+    // Verify the code first
+    const { error: verifyError, valid } = await verifyEmailCode(verificationEmail, verificationCode);
+    
+    if (verifyError || !valid) {
+      setError('Invalid or expired verification code. Please try again.');
+      setIsLoading(false);
+      return;
+    }
+
+    // Now create the account
     const { error } = await signUp(email, password, {
       full_name: fullName.trim(),
       role,
@@ -121,11 +210,15 @@ const Auth = () => {
       }
     } else {
       setError('');
-      setSignupSuccess(`Account created successfully! Please check your email at ${email} and click the confirmation link to activate your account.`);
-      // Clear form but stay on signup tab to show success message
+      setSignupSuccess('Account created and verified successfully! You can now sign in.');
+      // Reset verification step and clear form
+      setVerificationStep(false);
+      setVerificationCode('');
+      setVerificationEmail('');
       setFullName('');
       setPassword('');
       setSector('');
+      setActiveTab('signin');
     }
     
     setIsLoading(false);
@@ -260,105 +353,141 @@ const Auth = () => {
             </TabsContent>
 
             <TabsContent value="signup">
-              <form onSubmit={handleSignUp} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signup-name" className="text-slate-300">Full Name</Label>
-                  <Input
-                    id="signup-name"
-                    type="text"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    className="bg-slate-700 border-slate-600 text-white"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email" className="text-slate-300">Email</Label>
-                  <Input
-                    id="signup-email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="bg-slate-700 border-slate-600 text-white"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password" className="text-slate-300">Password</Label>
-                  <Input
-                    id="signup-password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="bg-slate-700 border-slate-600 text-white"
-                    required
-                    minLength={6}
-                  />
-                  <p className="text-xs text-slate-400">
-                    Must contain: lowercase, uppercase, number, and special character
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-role" className="text-slate-300">Role</Label>
-                  <Select value={role} onValueChange={(value: 'admin' | 'analyst' | 'sector-lead') => setRole(value)}>
-                    <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
-                      <SelectValue placeholder="Select your role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {roles.map((roleOption) => (
-                        <SelectItem key={roleOption.value} value={roleOption.value}>
-                          {roleOption.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-sector" className="text-slate-300">Sector</Label>
-                  <Select value={sector} onValueChange={setSector}>
-                    <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
-                      <SelectValue placeholder="Select your sector" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {sectors.map((sectorOption) => (
-                        <SelectItem key={sectorOption.value} value={sectorOption.value}>
-                          {sectorOption.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Button 
-                  type="submit" 
-                  className="w-full" 
-                  disabled={isLoading}
-                >
-                  {isLoading ? 'Creating Account...' : 'Create Account'}
-                </Button>
-                
-                {signupSuccess && (
-                  <div className="mt-4 space-y-2">
-                    <Button 
-                      type="button"
-                      variant="outline"
-                      className="w-full bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600"
-                      onClick={async () => {
-                        setIsLoading(true);
-                        const { error } = await resendVerificationEmail(email);
-                        if (error) {
-                          setError('Failed to resend verification email. Please try again.');
-                        } else {
-                          setSignupSuccess('Verification email resent! Please check your inbox.');
-                        }
-                        setIsLoading(false);
-                      }}
-                      disabled={isLoading || !email}
-                    >
-                      Resend Verification Email
-                    </Button>
+              {!verificationStep ? (
+                <form onSubmit={handleSignUp} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-name" className="text-slate-300">Full Name</Label>
+                    <Input
+                      id="signup-name"
+                      type="text"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      className="bg-slate-700 border-slate-600 text-white"
+                      required
+                    />
                   </div>
-                )}
-              </form>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-email" className="text-slate-300">Email</Label>
+                    <Input
+                      id="signup-email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="bg-slate-700 border-slate-600 text-white"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-password" className="text-slate-300">Password</Label>
+                    <Input
+                      id="signup-password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="bg-slate-700 border-slate-600 text-white"
+                      required
+                      minLength={6}
+                    />
+                    <p className="text-xs text-slate-400">
+                      Must contain: lowercase, uppercase, number, and special character
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-role" className="text-slate-300">Role</Label>
+                    <Select value={role} onValueChange={(value: 'admin' | 'analyst' | 'sector-lead') => setRole(value)}>
+                      <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                        <SelectValue placeholder="Select your role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {roles.map((roleOption) => (
+                          <SelectItem key={roleOption.value} value={roleOption.value}>
+                            {roleOption.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-sector" className="text-slate-300">Sector</Label>
+                    <Select value={sector} onValueChange={setSector}>
+                      <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                        <SelectValue placeholder="Select your sector" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {sectors.map((sectorOption) => (
+                          <SelectItem key={sectorOption.value} value={sectorOption.value}>
+                            {sectorOption.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button 
+                    type="submit" 
+                    className="w-full" 
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Sending Code...' : 'Send Verification Code'}
+                  </Button>
+                </form>
+              ) : (
+                <form onSubmit={handleVerifyCode} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="verification-code" className="text-slate-300">Verification Code</Label>
+                    <Input
+                      id="verification-code"
+                      type="text"
+                      value={verificationCode}
+                      onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                      className="bg-slate-700 border-slate-600 text-white text-center text-2xl tracking-widest"
+                      placeholder="000000"
+                      maxLength={6}
+                      required
+                    />
+                    <p className="text-xs text-slate-400">
+                      Enter the 6-digit code sent to {verificationEmail}
+                    </p>
+                  </div>
+                  <Button 
+                    type="submit" 
+                    className="w-full" 
+                    disabled={isLoading || verificationCode.length !== 6}
+                  >
+                    {isLoading ? 'Creating Account...' : 'Verify & Create Account'}
+                  </Button>
+                  <Button 
+                    type="button"
+                    variant="outline"
+                    className="w-full bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600"
+                    onClick={async () => {
+                      setIsLoading(true);
+                      const { error } = await sendVerificationEmail(verificationEmail);
+                      if (error) {
+                        setError('Failed to resend verification code. Please try again.');
+                      } else {
+                        setSignupSuccess('Verification code resent! Please check your email.');
+                      }
+                      setIsLoading(false);
+                    }}
+                    disabled={isLoading}
+                  >
+                    Resend Code
+                  </Button>
+                  <Button 
+                    type="button"
+                    variant="ghost"
+                    className="w-full text-slate-400"
+                    onClick={() => {
+                      setVerificationStep(false);
+                      setVerificationCode('');
+                      setVerificationEmail('');
+                      setSignupSuccess('');
+                    }}
+                  >
+                    ← Back to Sign Up
+                  </Button>
+                </form>
+              )}
             </TabsContent>
 
             <TabsContent value="reset">
