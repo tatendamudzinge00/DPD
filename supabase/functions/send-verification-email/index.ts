@@ -84,6 +84,17 @@ serve(async (req: Request) => {
       `,
     });
 
+    if (emailResponse.error) {
+      console.error('Resend error:', emailResponse.error);
+      return new Response(
+        JSON.stringify({ error: emailResponse.error.message || 'Failed to send verification email' }),
+        { 
+          status: 502, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+
     console.log('Email sent successfully:', emailResponse);
 
     return new Response(
