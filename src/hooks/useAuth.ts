@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -18,199 +18,55 @@ export function useAuth() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // De-dupe profile fetches across re-renders
-  const fetchingProfileRef = useRef(false);
-  const lastFetchedUserIdRef = useRef<string | null>(null);
-  const lastFetchedAtRef = useRef<number>(0);
-
-  const fetchProfile = async (userId: string) => {
-    try {
-      // De-dupe rapid repeat calls
-      const now = Date.now();
-      if (
-        (lastFetchedUserIdRef.current === userId && now - lastFetchedAtRef.current < 5000) ||
-        fetchingProfileRef.current
-      ) {
-        return;
-      }
-      fetchingProfileRef.current = true;
-      lastFetchedUserIdRef.current = userId;
-      lastFetchedAtRef.current = now;
-
-      console.log('Fetching profile for user:', userId);
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', userId)
-        .maybeSingle();
-
-      if (error) {
-        console.error('Profile fetch error:', error);
-        throw error;
-      }
-      
-      console.log('Profile fetched:', data);
-      setProfile(data);
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-      setProfile(null);
-    } finally {
-      fetchingProfileRef.current = false;
-    }
-  };
-
   useEffect(() => {
-    let mounted = true;
-    let initializing = false;
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
 
-    const initializeAuth = async () => {
-      if (initializing) return;
-      initializing = true;
-
-      try {
-        // Get initial session first
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (!mounted) return;
-        
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (session?.user) {
-          await fetchProfile(session.user.id);
-        } else {
-          setProfile(null);
-        }
-        
-        setLoading(false);
-      } catch (error) {
-        console.error('Auth initialization error:', error);
-        if (mounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    // Set up auth state listener
+    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (!mounted) return;
-        
+      (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
-        
-        if (session?.user && event !== 'TOKEN_REFRESHED') {
-          // Only fetch profile on actual sign in, not token refresh
-          setTimeout(() => {
-            if (mounted) {
-              fetchProfile(session.user.id);
-            }
-          }, 0);
-        } else if (!session?.user) {
-          setProfile(null);
-        }
-        
         setLoading(false);
       }
     );
 
-    initializeAuth();
-
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
+    return () => subscription.unsubscribe();
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email.toLowerCase().trim(),
-        password,
-      });
-      
-      if (error) throw error;
-      return { data, error: null };
-    } catch (error: any) {
-      console.error('Sign in error:', error);
-      return { data: null, error };
-    }
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    return { data, error };
   };
 
-  const signUp = async (email: string, password: string, metadata: {
-    full_name: string;
-    role: 'admin' | 'analyst' | 'sector-lead';
-    sector: string;
-  }) => {
-    try {
-      const redirectUrl = `${window.location.origin}/`;
-      
-      const { data, error } = await supabase.auth.signUp({
-        email: email.toLowerCase().trim(),
-        password,
-        options: {
-          emailRedirectTo: redirectUrl,
-          data: {
-            full_name: metadata.full_name,
-            role: metadata.role,
-            sector: metadata.sector
-          }
-        }
-      });
-      
-      if (error) throw error;
-      return { data, error: null };
-    } catch (error: any) {
-      console.error('Sign up error:', error);
-      return { data: null, error };
-    }
-  };
-
-  const resetPassword = async (email: string) => {
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth`,
-      });
-      
-      if (error) throw error;
-      return { error: null };
-    } catch (error: any) {
-      console.error('Password reset error:', error);
-      return { error };
-    }
-  };
-
-  const resendVerificationEmail = async (email: string) => {
-    try {
-      const { error } = await supabase.auth.resend({
-        type: 'signup',
-        email: email.toLowerCase().trim(),
-        options: {
-          emailRedirectTo: `${window.location.origin}/`,
-        }
-      });
-      
-      if (error) throw error;
-      return { error: null };
-    } catch (error: any) {
-      console.error('Resend verification error:', error);
-      return { error };
-    }
+  const signUp = async (email: string, password: string) => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/`,
+      }
+    });
+    return { data, error };
   };
 
   const signOut = async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      
-      setUser(null);
-      setSession(null);
-      setProfile(null);
-      
-      return { error: null };
-    } catch (error: any) {
-      return { error };
-    }
+    const { error } = await supabase.auth.signOut();
+    return { error };
+  };
+
+  const resetPassword = async (email: string) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth`,
+    });
+    return { error };
   };
 
   return {
@@ -222,6 +78,5 @@ export function useAuth() {
     signUp,
     signOut,
     resetPassword,
-    resendVerificationEmail,
   };
 }
