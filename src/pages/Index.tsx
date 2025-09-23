@@ -12,13 +12,11 @@ import ThreatMapDashboard from "@/components/ThreatMapDashboard";
 import IncidentReportingPanel from "@/components/IncidentReportingPanel";
 import InteractiveSecurityMap from "@/components/InteractiveSecurityMap";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { useAuth } from '@/hooks/useAuth';
 import { useRealtimeIncidents, useRealtimeSecurityLogs } from "@/hooks/useSupabaseData";
 
 export type SectorType = 'government' | 'banking' | 'private' | 'education' | 'industrial' | 'telecoms' | 'health' | 'energy' | 'transport' | 'media' | 'overview' | 'zchpc' | 'analytics' | 'threat-map' | 'incident-reporting' | 'security-map';
 
 const Index = () => {
-  const { profile } = useAuth();
   const [activeSector, setActiveSector] = useState<SectorType>('overview');
   const [showEnhancedIncidents, setShowEnhancedIncidents] = useState(false);
   
@@ -47,23 +45,12 @@ const Index = () => {
       return <InteractiveSecurityMap />;
     }
 
-    if (!profile) return null;
-
-    // Role-based dashboard rendering
-    switch (profile.role) {
-      case 'admin':
-        return <DataProtectionDashboard />;
-      case 'analyst':
-        return <DataProtectionDashboard />;
-      case 'sector-lead':
-        return <DataProtectionDashboard />;
-      default:
-        // Sector-specific or overview dashboard
-        if (activeSector && activeSector !== 'overview') {
-          return <SectorDetail sector={activeSector} />;
-        }
-        return <SectorOverview />;
+    // Default to main dashboard
+    if (activeSector && activeSector !== 'overview') {
+      return <SectorDetail sector={activeSector} />;
     }
+    
+    return <DataProtectionDashboard />;
   };
 
   return (
