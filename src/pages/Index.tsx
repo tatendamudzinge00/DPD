@@ -11,10 +11,11 @@ import SecurityAnalyticsDashboard from "@/components/SecurityAnalyticsDashboard"
 import ThreatMapDashboard from "@/components/ThreatMapDashboard";
 import IncidentReportingPanel from "@/components/IncidentReportingPanel";
 import InteractiveSecurityMap from "@/components/InteractiveSecurityMap";
+import SecurityToolsIntegration from "@/components/SecurityToolsIntegration";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useRealtimeIncidents, useRealtimeSecurityLogs } from "@/hooks/useSupabaseData";
 
-export type SectorType = 'government' | 'banking' | 'private' | 'education' | 'industrial' | 'telecoms' | 'health' | 'energy' | 'transport' | 'media' | 'overview' | 'zchpc' | 'analytics' | 'threat-map' | 'incident-reporting' | 'security-map';
+export type SectorType = 'government' | 'banking' | 'private' | 'education' | 'industrial' | 'telecoms' | 'health' | 'energy' | 'transport' | 'media' | 'overview' | 'zchpc' | 'analytics' | 'threat-map' | 'incident-reporting' | 'security-map' | 'security-tools';
 
 const Index = () => {
   const [activeSector, setActiveSector] = useState<SectorType>('overview');
@@ -43,6 +44,10 @@ const Index = () => {
 
     if (activeSector === 'security-map') {
       return <InteractiveSecurityMap />;
+    }
+
+    if (activeSector === 'security-tools') {
+      return <SecurityToolsIntegration />;
     }
 
     // Default to main dashboard

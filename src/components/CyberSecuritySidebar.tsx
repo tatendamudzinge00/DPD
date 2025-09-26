@@ -13,7 +13,7 @@ import {
   SidebarHeader,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import { Shield, Building2, Landmark, GraduationCap, Factory, Radio, Heart, Zap, Truck, Tv, Users, Database, Server, Home, MapPin } from "lucide-react";
+import { Shield, Building2, Landmark, GraduationCap, Factory, Radio, Heart, Zap, Truck, Tv, Users, Database, Server, Home, MapPin, LayoutDashboard, BarChart3, Map, AlertTriangle, Settings } from "lucide-react";
 import { SectorType } from "@/pages/Index";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from '@/hooks/useAuth';
@@ -26,6 +26,15 @@ interface CyberSecuritySidebarProps {
 const mainNavigation = [
   { id: 'dashboard', title: 'Main Dashboard', icon: Home, path: '/' },
   { id: 'sectors', title: 'Sector Overview', icon: MapPin, path: '/sectors' },
+];
+
+const quickAccessItems = [
+  { id: 'overview', icon: LayoutDashboard, label: 'Overview' },
+  { id: 'analytics', icon: BarChart3, label: 'Analytics' },
+  { id: 'threat-map', icon: Map, label: 'Threat Map' },
+  { id: 'incident-reporting', icon: AlertTriangle, label: 'Incident Reporting' },
+  { id: 'security-map', icon: Shield, label: 'Security Map' },
+  { id: 'security-tools', icon: Settings, label: 'Security Tools' },
 ];
 
 const sectors = [
@@ -114,11 +123,42 @@ export function CyberSecuritySidebar({ activeSector, setActiveSector }: CyberSec
           </SidebarGroupContent>
         </SidebarGroup>
 
+        {/* Quick Access - Only show on main dashboard */}
+        {location.pathname === '/' && (
+          <SidebarGroup>
+            <SidebarGroupLabel className="text-slate-300 font-semibold mb-4 group-data-[collapsible=icon]:hidden">
+              Quick Access
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu className="space-y-1">
+                {quickAccessItems.map((item) => (
+                  <SidebarMenuItem key={item.id}>
+                    <SidebarMenuButton
+                      onClick={() => setActiveSector(item.id as SectorType)}
+                      className={`w-full justify-start p-3 rounded-lg transition-all duration-200 ${
+                        activeSector === item.id 
+                          ? 'bg-blue-600 text-white shadow-lg' 
+                          : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                      }`}
+                      tooltip={item.label}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <item.icon className="h-5 w-5" />
+                        <span className="font-medium group-data-[collapsible=icon]:hidden">{item.label}</span>
+                      </div>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
         {/* Sector Dashboard - Only show on main dashboard with filtered sectors */}
         {location.pathname === '/' && visibleSectors.length > 0 && (
           <SidebarGroup>
             <SidebarGroupLabel className="text-slate-300 font-semibold mb-4 group-data-[collapsible=icon]:hidden">
-              {profile?.role === 'admin' ? 'Quick Access' : 'My Sector'}
+              {profile?.role === 'admin' ? 'Sectors' : 'My Sector'}
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu className="space-y-1">

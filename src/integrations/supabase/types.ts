@@ -264,6 +264,174 @@ export type Database = {
           },
         ]
       }
+      misp_events: {
+        Row: {
+          analysis_status: string | null
+          attributes_count: number | null
+          collected_at: string
+          event_date: string | null
+          event_id: string | null
+          event_title: string | null
+          id: string
+          raw_data: Json | null
+          sector: string | null
+          threat_level: number | null
+          tool_id: string | null
+        }
+        Insert: {
+          analysis_status?: string | null
+          attributes_count?: number | null
+          collected_at?: string
+          event_date?: string | null
+          event_id?: string | null
+          event_title?: string | null
+          id?: string
+          raw_data?: Json | null
+          sector?: string | null
+          threat_level?: number | null
+          tool_id?: string | null
+        }
+        Update: {
+          analysis_status?: string | null
+          attributes_count?: number | null
+          collected_at?: string
+          event_date?: string | null
+          event_id?: string | null
+          event_title?: string | null
+          id?: string
+          raw_data?: Json | null
+          sector?: string | null
+          threat_level?: number | null
+          tool_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "misp_events_tool_id_fkey"
+            columns: ["tool_id"]
+            isOneToOne: false
+            referencedRelation: "security_tools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      nessus_scans: {
+        Row: {
+          collected_at: string
+          critical_count: number | null
+          high_count: number | null
+          id: string
+          low_count: number | null
+          medium_count: number | null
+          raw_data: Json | null
+          scan_date: string | null
+          scan_id: string | null
+          scan_name: string | null
+          scan_status: string | null
+          sector: string | null
+          target_count: number | null
+          tool_id: string | null
+          vulnerabilities_found: number | null
+        }
+        Insert: {
+          collected_at?: string
+          critical_count?: number | null
+          high_count?: number | null
+          id?: string
+          low_count?: number | null
+          medium_count?: number | null
+          raw_data?: Json | null
+          scan_date?: string | null
+          scan_id?: string | null
+          scan_name?: string | null
+          scan_status?: string | null
+          sector?: string | null
+          target_count?: number | null
+          tool_id?: string | null
+          vulnerabilities_found?: number | null
+        }
+        Update: {
+          collected_at?: string
+          critical_count?: number | null
+          high_count?: number | null
+          id?: string
+          low_count?: number | null
+          medium_count?: number | null
+          raw_data?: Json | null
+          scan_date?: string | null
+          scan_id?: string | null
+          scan_name?: string | null
+          scan_status?: string | null
+          sector?: string | null
+          target_count?: number | null
+          tool_id?: string | null
+          vulnerabilities_found?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nessus_scans_tool_id_fkey"
+            columns: ["tool_id"]
+            isOneToOne: false
+            referencedRelation: "security_tools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      nozomi_alerts: {
+        Row: {
+          alert_id: string | null
+          alert_time: string | null
+          alert_type: string | null
+          collected_at: string
+          description: string | null
+          destination_ip: string | null
+          id: string
+          protocol: string | null
+          raw_data: Json | null
+          sector: string | null
+          severity: string | null
+          source_ip: string | null
+          tool_id: string | null
+        }
+        Insert: {
+          alert_id?: string | null
+          alert_time?: string | null
+          alert_type?: string | null
+          collected_at?: string
+          description?: string | null
+          destination_ip?: string | null
+          id?: string
+          protocol?: string | null
+          raw_data?: Json | null
+          sector?: string | null
+          severity?: string | null
+          source_ip?: string | null
+          tool_id?: string | null
+        }
+        Update: {
+          alert_id?: string | null
+          alert_time?: string | null
+          alert_type?: string | null
+          collected_at?: string
+          description?: string | null
+          destination_ip?: string | null
+          id?: string
+          protocol?: string | null
+          raw_data?: Json | null
+          sector?: string | null
+          severity?: string | null
+          source_ip?: string | null
+          tool_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nozomi_alerts_tool_id_fkey"
+            columns: ["tool_id"]
+            isOneToOne: false
+            referencedRelation: "security_tools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -300,6 +468,56 @@ export type Database = {
         }
         Relationships: []
       }
+      qualys_assets: {
+        Row: {
+          asset_type: string | null
+          collected_at: string
+          host_ip: string | null
+          hostname: string | null
+          id: string
+          last_scanned: string | null
+          raw_data: Json | null
+          sector: string | null
+          severity_score: number | null
+          tool_id: string | null
+          vulnerabilities_count: number | null
+        }
+        Insert: {
+          asset_type?: string | null
+          collected_at?: string
+          host_ip?: string | null
+          hostname?: string | null
+          id?: string
+          last_scanned?: string | null
+          raw_data?: Json | null
+          sector?: string | null
+          severity_score?: number | null
+          tool_id?: string | null
+          vulnerabilities_count?: number | null
+        }
+        Update: {
+          asset_type?: string | null
+          collected_at?: string
+          host_ip?: string | null
+          hostname?: string | null
+          id?: string
+          last_scanned?: string | null
+          raw_data?: Json | null
+          sector?: string | null
+          severity_score?: number | null
+          tool_id?: string | null
+          vulnerabilities_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "qualys_assets_tool_id_fkey"
+            columns: ["tool_id"]
+            isOneToOne: false
+            referencedRelation: "security_tools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       security_logs: {
         Row: {
           created_at: string
@@ -333,6 +551,48 @@ export type Database = {
           severity?: string
           source?: string
           target?: string | null
+        }
+        Relationships: []
+      }
+      security_tools: {
+        Row: {
+          created_at: string
+          endpoint_url: string
+          id: string
+          is_active: boolean | null
+          last_sync: string | null
+          metadata: Json | null
+          sector: string | null
+          sync_frequency: number | null
+          tool_name: string
+          tool_type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          endpoint_url: string
+          id?: string
+          is_active?: boolean | null
+          last_sync?: string | null
+          metadata?: Json | null
+          sector?: string | null
+          sync_frequency?: number | null
+          tool_name: string
+          tool_type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          endpoint_url?: string
+          id?: string
+          is_active?: boolean | null
+          last_sync?: string | null
+          metadata?: Json | null
+          sector?: string | null
+          sync_frequency?: number | null
+          tool_name?: string
+          tool_type?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -407,6 +667,50 @@ export type Database = {
           validated_by?: string | null
         }
         Relationships: []
+      }
+      splunk_data: {
+        Row: {
+          collected_at: string
+          count: number | null
+          id: string
+          query_used: string | null
+          raw_data: Json | null
+          sector: string | null
+          severity: string | null
+          threat_type: string | null
+          tool_id: string | null
+        }
+        Insert: {
+          collected_at?: string
+          count?: number | null
+          id?: string
+          query_used?: string | null
+          raw_data?: Json | null
+          sector?: string | null
+          severity?: string | null
+          threat_type?: string | null
+          tool_id?: string | null
+        }
+        Update: {
+          collected_at?: string
+          count?: number | null
+          id?: string
+          query_used?: string | null
+          raw_data?: Json | null
+          sector?: string | null
+          severity?: string | null
+          threat_type?: string | null
+          tool_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "splunk_data_tool_id_fkey"
+            columns: ["tool_id"]
+            isOneToOne: false
+            referencedRelation: "security_tools"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       threat_actors: {
         Row: {
