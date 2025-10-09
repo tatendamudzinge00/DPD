@@ -17,14 +17,14 @@ const Auth = () => {
   const [role, setRole] = useState<'analyst' | 'sector-lead'>('analyst');
   const [sector, setSector] = useState('government');
   
-  const { signIn, signUp, user } = useAuth();
+  const { signIn, signUp, user, profile, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) {
+    if (!loading && user && profile) {
       navigate('/');
     }
-  }, [user, navigate]);
+  }, [user, profile, loading, navigate]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
