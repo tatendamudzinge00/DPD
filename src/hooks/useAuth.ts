@@ -32,7 +32,32 @@ export function useAuth() {
       setProfile(data);
     } catch (error) {
       console.error('Error fetching profile:', error);
-      setProfile(null);
+      // Attempt to create or upsert a minimal profile for authenticated user
+      try {
+        const { data: userRes } = await supabase.auth.getUser();
+        const email = userRes.user?.email ?? '';
+        const { data: upserted, error: upsertError } = await supabase
+          .from('profiles')
+          .upsert(
+            {
+              user_id: userId,
+              email,
+              full_name: null,
+              role: 'analyst',
+              sector: 'government',
+              is_active: true,
+            },
+            { onConflict: 'user_id' }
+          )
+          .select('*')
+          .single();
+
+        if (upsertError) throw upsertError;
+        setProfile(upserted as any);
+      } catch (createErr) {
+        console.error('Error creating profile:', createErr);
+        setProfile(null);
+      }
     }
   };
 

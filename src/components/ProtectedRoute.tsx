@@ -25,27 +25,29 @@ export function ProtectedRoute({
         return;
       }
 
-      // Check if profile is loaded and active
-      if (!profile || !profile.is_active) {
+      // If profile is loaded and inactive, redirect
+      if (profile && !profile.is_active) {
         navigate('/auth');
         return;
       }
 
-      // Check role-based access
-      if (requiredRole && profile.role !== requiredRole && profile.role !== 'admin') {
+      // Check role-based access (when profile is available)
+      if (profile && requiredRole && profile.role !== requiredRole && profile.role !== 'admin') {
         navigate('/');
         return;
       }
 
-      // Check sector-based access
-      if (requiredSector && profile.sector !== requiredSector && profile.role !== 'admin') {
+      // Check sector-based access (when profile is available)
+      if (profile && requiredSector && profile.sector !== requiredSector && profile.role !== 'admin') {
         navigate('/');
         return;
       }
+
+      // Note: Do NOT redirect when profile is null yet; wait for it to load/create
     }
   }, [user, profile, loading, requiredRole, requiredSector, navigate]);
 
-  if (loading) {
+  if (loading || !profile) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-950">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -53,7 +55,7 @@ export function ProtectedRoute({
     );
   }
 
-  if (!user || !profile || !profile.is_active) {
+  if (!user || !profile.is_active) {
     return null;
   }
 
