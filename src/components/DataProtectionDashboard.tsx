@@ -10,6 +10,7 @@ import { useDataSubjectRequests, useRealtimeDataSubjectRequests, useUpdateDataSu
 import { DataSubjectRequestForm } from './DataSubjectRequestForm';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ReportGenerator } from './ReportGenerator';
 
 export function DataProtectionDashboard() {
   const [selectedTimeframe, setSelectedTimeframe] = useState<'24h' | '7d' | '30d'>('7d');
@@ -76,10 +77,7 @@ export function DataProtectionDashboard() {
           <p className="text-slate-400">Comprehensive privacy compliance monitoring</p>
         </div>
         <div className="flex items-center space-x-2">
-          <Button variant="outline" size="sm" className="border-slate-600 text-slate-300">
-            <Calendar className="h-4 w-4 mr-2" />
-            Generate Report
-          </Button>
+          <ReportGenerator />
         </div>
       </div>
 

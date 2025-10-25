@@ -2,8 +2,10 @@
 import React from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Shield, Bell, Settings, User, FileText, LogOut } from "lucide-react";
+import { Shield, FileText, LogOut, User } from "lucide-react";
 import { useAuth } from '@/hooks/useAuth';
+import { NotificationsPanel } from './NotificationsPanel';
+import { SettingsDialog } from './SettingsDialog';
 
 interface DashboardHeaderProps {
   onShowEnhancedIncidents?: () => void;
@@ -65,12 +67,8 @@ export function DashboardHeader({
           </div>
 
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="sm" className="text-slate-300">
-              <Bell className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="sm" className="text-slate-300">
-              <Settings className="h-4 w-4" />
-            </Button>
+            <NotificationsPanel />
+            <SettingsDialog />
             <Button 
               variant="ghost" 
               size="sm" 
