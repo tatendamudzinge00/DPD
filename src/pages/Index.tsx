@@ -12,10 +12,19 @@ import ThreatMapDashboard from "@/components/ThreatMapDashboard";
 import IncidentReportingPanel from "@/components/IncidentReportingPanel";
 import InteractiveSecurityMap from "@/components/InteractiveSecurityMap";
 import SecurityToolsIntegration from "@/components/SecurityToolsIntegration";
+import { NetworkTrafficDashboard } from "@/components/NetworkTrafficDashboard";
+import { SystemHealthDashboard } from "@/components/SystemHealthDashboard";
+import { EndpointSecurityDashboard } from "@/components/EndpointSecurityDashboard";
+import { IDSSIEMDashboard } from "@/components/IDSSIEMDashboard";
+import { VulnerabilityManagementDashboard } from "@/components/VulnerabilityManagementDashboard";
+import { IAMDashboard } from "@/components/IAMDashboard";
+import { RiskGovernanceDashboard } from "@/components/RiskGovernanceDashboard";
+import { DLPPrivacyDashboard } from "@/components/DLPPrivacyDashboard";
+import { ForensicsDashboard } from "@/components/ForensicsDashboard";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useRealtimeIncidents, useRealtimeSecurityLogs } from "@/hooks/useSupabaseData";
 
-export type SectorType = 'government' | 'banking' | 'private' | 'education' | 'industrial' | 'telecoms' | 'health' | 'energy' | 'transport' | 'media' | 'overview' | 'zchpc' | 'analytics' | 'threat-map' | 'incident-reporting' | 'security-map' | 'security-tools';
+export type SectorType = 'government' | 'banking' | 'private' | 'education' | 'industrial' | 'telecoms' | 'health' | 'energy' | 'transport' | 'media' | 'overview' | 'zchpc' | 'analytics' | 'threat-map' | 'incident-reporting' | 'security-map' | 'security-tools' | 'network-traffic' | 'system-health' | 'endpoint-security' | 'ids-siem' | 'vulnerability-management' | 'iam' | 'risk-governance' | 'dlp-privacy' | 'forensics' | 'business-continuity';
 
 const Index = () => {
   const [activeSector, setActiveSector] = useState<SectorType>('overview');
@@ -30,32 +39,41 @@ const Index = () => {
       return <ComplianceMonitor />;
     }
 
-    if (activeSector === 'analytics') {
-      return <SecurityAnalyticsDashboard />;
+    switch (activeSector) {
+      case 'analytics':
+        return <SecurityAnalyticsDashboard />;
+      case 'threat-map':
+        return <ThreatMapDashboard />;
+      case 'incident-reporting':
+        return <IncidentReportingPanel />;
+      case 'security-map':
+        return <InteractiveSecurityMap />;
+      case 'security-tools':
+        return <SecurityToolsIntegration />;
+      case 'network-traffic':
+        return <NetworkTrafficDashboard />;
+      case 'system-health':
+        return <SystemHealthDashboard />;
+      case 'endpoint-security':
+        return <EndpointSecurityDashboard />;
+      case 'ids-siem':
+        return <IDSSIEMDashboard />;
+      case 'vulnerability-management':
+        return <VulnerabilityManagementDashboard />;
+      case 'iam':
+        return <IAMDashboard />;
+      case 'risk-governance':
+        return <RiskGovernanceDashboard />;
+      case 'dlp-privacy':
+        return <DLPPrivacyDashboard />;
+      case 'forensics':
+      case 'business-continuity':
+        return <ForensicsDashboard />;
+      case 'overview':
+        return <DataProtectionDashboard />;
+      default:
+        return <SectorDetail sector={activeSector} />;
     }
-
-    if (activeSector === 'threat-map') {
-      return <ThreatMapDashboard />;
-    }
-
-    if (activeSector === 'incident-reporting') {
-      return <IncidentReportingPanel />;
-    }
-
-    if (activeSector === 'security-map') {
-      return <InteractiveSecurityMap />;
-    }
-
-    if (activeSector === 'security-tools') {
-      return <SecurityToolsIntegration />;
-    }
-
-    // Default to main dashboard
-    if (activeSector && activeSector !== 'overview') {
-      return <SectorDetail sector={activeSector} />;
-    }
-    
-    return <DataProtectionDashboard />;
   };
 
   return (
