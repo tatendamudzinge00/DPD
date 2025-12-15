@@ -1,0 +1,301 @@
+================================================================================
+NATIONAL CYBERSECURITY & DATA PROTECTION DASHBOARD
+Enterprise Threat Intelligence Platform
+================================================================================
+
+PROJECT OVERVIEW
+-----------------
+A comprehensive, high-end cybersecurity monitoring and threat intelligence 
+platform designed for national-level security operations. Built with React, 
+TypeScript, Tailwind CSS, and Supabase.
+
+================================================================================
+CORE CAPABILITIES
+================================================================================
+
+1. AUTHENTICATION & ACCESS CONTROL
+-----------------------------------
+- User authentication (login/logout)
+- Role-based access control (Admin, Analyst, Sector Lead)
+- Multi-sector support (Government, Banking, Private, Education, Industrial, 
+  Telecoms, Health, Energy, Transport, Media, ZCHPC)
+- Protected routes and session management
+- Email verification system
+
+2. NETWORK TRAFFIC ANALYSIS
+---------------------------
+- Real-time packet inspection
+- Deep packet examination (DPI)
+- Protocol anomaly detection
+- Bandwidth utilization monitoring
+- Geolocation tracking of traffic sources
+- Anomaly scoring and detection
+
+3. SYSTEM HEALTH & PERFORMANCE MONITORING
+-----------------------------------------
+- Server uptime/downtime tracking
+- CPU/memory/disk usage monitoring
+- Database performance metrics
+- Application response time tracking
+- Real-time server status indicators
+
+4. ENDPOINT SECURITY MANAGEMENT
+-------------------------------
+- Device inventory and compliance tracking
+- Antivirus/malware status monitoring
+- Patch management tracking
+- Configuration baseline monitoring
+- OS type and version tracking
+- Active device monitoring
+
+5. INTRUSION DETECTION SYSTEM (IDS)
+-----------------------------------
+- Signature-based threat detection
+- Attack pattern recognition
+- Confidence scoring
+- False positive management
+- Source/destination IP tracking
+- Alert severity classification
+
+6. SIEM (Security Information & Event Management)
+-------------------------------------------------
+- Log aggregation from multiple sources
+- Correlation rule engines
+- Real-time alert generation
+- Forensic analysis capabilities
+- Historical event correlation
+- Event indexing and search
+
+7. THREAT INTELLIGENCE INTEGRATION
+----------------------------------
+- Global threat feed aggregation
+- Industry-specific intelligence
+- IoC (Indicator of Compromise) database
+- MISP integration simulation
+- Dark web monitoring indicators
+- Threat actor tracking
+- MITRE ATT&CK technique mapping
+
+8. VULNERABILITY MANAGEMENT
+---------------------------
+- Automated vulnerability scanning
+- CVSS scoring integration
+- Patch prioritization engine
+- Remediation tracking
+- Asset-based vulnerability mapping
+- Nessus/Qualys integration simulation
+
+9. PENETRATION TESTING ORCHESTRATION
+------------------------------------
+- Pentest result tracking
+- Finding severity classification
+- Target system documentation
+- Tester assignment
+- Report URL management
+
+10. IDENTITY & ACCESS MANAGEMENT (IAM)
+--------------------------------------
+- Authentication monitoring
+- Multi-factor authentication tracking
+- Failed login attempt analysis
+- Privileged account monitoring
+- Session duration tracking
+- Access control management
+- Permission and resource tracking
+
+11. DATA LOSS PREVENTION (DLP)
+------------------------------
+- Sensitive data classification
+- Data flow monitoring
+- Policy enforcement mechanisms
+- Exfiltration attempt detection
+- Encryption compliance tracking
+- Data blocking capabilities
+
+12. PRIVACY & COMPLIANCE MANAGEMENT
+------------------------------------
+- GDPR compliance tracking
+- Data subject request handling
+- Personal data inventory
+- Consent management tracking
+- Retention period monitoring
+- Legal basis documentation
+
+13. FORENSIC ANALYSIS TOOLKIT
+-----------------------------
+- Case management system
+- Evidence collection tracking
+- Timeline reconstruction
+- Chain of custody tracking
+- Investigation status management
+- Incident correlation
+
+14. BUSINESS CONTINUITY MONITORING
+----------------------------------
+- Disaster recovery status
+- Backup system health
+- RTO/RPO compliance tracking
+- Failover mechanism status
+- Recovery testing schedules
+
+15. RISK & GOVERNANCE
+---------------------
+- Quantitative risk scoring
+- Impact and likelihood assessment
+- Mitigation strategy tracking
+- Residual risk monitoring
+- Risk category classification
+
+16. SECURITY POLICY MANAGEMENT
+------------------------------
+- Policy version control
+- Policy status tracking
+- Acknowledgment collection
+- Review date management
+- Sector-specific policies
+
+17. TRAINING & AWARENESS
+------------------------
+- Employee training tracking
+- Certification monitoring
+- Completion rate tracking
+- Score assessment
+- Training session scheduling
+
+================================================================================
+SECURITY TOOL INTEGRATIONS (Simulated)
+================================================================================
+
+- Splunk SIEM
+- Qualys Vulnerability Management
+- MISP Threat Intelligence
+- Nessus Vulnerability Scanner
+- Nozomi Networks (OT Security)
+
+================================================================================
+DASHBOARD COMPONENTS
+================================================================================
+
+1. AdminDashboard - Full administrative overview
+2. AnalystDashboard - Security analyst workspace
+3. SectorLeadDashboard - Sector-specific management
+4. NetworkTrafficDashboard - Network monitoring
+5. SystemHealthDashboard - Infrastructure health
+6. EndpointSecurityDashboard - Device management
+7. IDSSIEMDashboard - Intrusion detection & SIEM
+8. VulnerabilityManagementDashboard - Vulnerability tracking
+9. IAMDashboard - Identity management
+10. RiskGovernanceDashboard - Risk assessment
+11. DLPPrivacyDashboard - Data protection
+12. ForensicsDashboard - Digital forensics
+13. ThreatMapDashboard - Geographic threat visualization
+14. EnterpriseSecurityDashboard - Threat intelligence platform
+15. ComplianceDashboard - Regulatory compliance
+16. ThreatIntelligence - Threat feed management
+17. SecurityAnalyticsDashboard - Analytics and metrics
+
+================================================================================
+REAL-TIME FEATURES
+================================================================================
+
+- Live security event streaming
+- Real-time alert generation
+- Automatic risk score calculation
+- Dynamic threat correlation
+- Live dashboard updates
+- WebSocket-like data simulation
+
+================================================================================
+VISUALIZATION & REPORTING
+================================================================================
+
+- Interactive charts (Recharts)
+- Risk heat maps
+- Trend analysis
+- Geographic threat maps
+- Severity distribution charts
+- Time-series analysis
+- Exportable reports
+
+================================================================================
+TECHNICAL STACK
+================================================================================
+
+Frontend:
+- React 18
+- TypeScript
+- Tailwind CSS
+- Shadcn/UI Components
+- Recharts for visualization
+- React Router for navigation
+- React Query for data fetching
+
+Backend:
+- Supabase (PostgreSQL)
+- Row Level Security (RLS)
+- Edge Functions
+- Real-time subscriptions
+
+================================================================================
+DATABASE TABLES
+================================================================================
+
+- profiles (user management)
+- incidents (security incidents)
+- security_logs (event logging)
+- network_traffic (network monitoring)
+- system_health (infrastructure health)
+- endpoints (device management)
+- ids_alerts (intrusion detection)
+- siem_events (SIEM data)
+- threat_iocs (indicators of compromise)
+- threat_feeds (threat intelligence)
+- threat_actors (threat actor profiles)
+- indicators_of_compromise (IOC database)
+- vulnerability_scans (vulnerability data)
+- assets_inventory (asset management)
+- pentest_results (penetration testing)
+- auth_logs (authentication logs)
+- access_control (access management)
+- dlp_events (data loss prevention)
+- personal_data_inventory (privacy data)
+- data_subject_requests (GDPR requests)
+- forensic_cases (digital forensics)
+- business_continuity (DR/BC tracking)
+- risk_assessments (risk management)
+- security_policies (policy management)
+- training_records (training tracking)
+- training_sessions (training scheduling)
+- compliance_frameworks (compliance tracking)
+- shared_intelligence (threat sharing)
+- security_tools (tool integrations)
+- splunk_data, qualys_assets, misp_events, nessus_scans, nozomi_alerts
+
+================================================================================
+SECTORS SUPPORTED
+================================================================================
+
+1. Government
+2. Banking
+3. Private
+4. Education
+5. Industrial
+6. Telecoms
+7. Health
+8. Energy
+9. Transport
+10. Media
+11. ZCHPC
+
+================================================================================
+USER ROLES
+================================================================================
+
+1. Admin - Full system access
+2. Analyst - Security analysis and monitoring
+3. Sector Lead - Sector-specific management
+
+================================================================================
+VERSION: 1.0
+PLATFORM: National Cybersecurity Operations Center (NCOC)
+================================================================================
