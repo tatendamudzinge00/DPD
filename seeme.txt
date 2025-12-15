@@ -1,29 +1,174 @@
 ================================================================================
-NATIONAL CYBERSECURITY & DATA PROTECTION DASHBOARD
-Enterprise Threat Intelligence Platform
+ENTERPRISE CYBERSECURITY THREAT INTELLIGENCE PLATFORM
+National Cybersecurity & Data Protection Dashboard
 ================================================================================
+Version: 1.1.0
+Last Updated: December 2024
+Platform: React + TypeScript + Supabase
 
-PROJECT OVERVIEW
------------------
+================================================================================
+TABLE OF CONTENTS
+================================================================================
+1. Overview
+2. Authentication & Authorization
+   2.1 User Authentication (Supabase Auth)
+   2.2 Multi-Factor Authentication (MFA/2FA)
+   2.3 Single Sign-On (SSO) Support
+   2.4 Session Management
+   2.5 Password Security
+3. Role-Based Access Control (RBAC)
+   3.1 User Roles
+   3.2 Granular Permissions
+   3.3 Sector-Based Access
+4. Core Security Modules
+5. Threat Intelligence Engine
+6. Dashboard Components
+7. Security Tool Integrations
+8. Database Schema
+9. Real-Time Features
+10. Supported Sectors
+11. Technical Stack
+12. API Endpoints
+13. Deployment & Configuration
+
+================================================================================
+1. OVERVIEW
+================================================================================
 A comprehensive, high-end cybersecurity monitoring and threat intelligence 
 platform designed for national-level security operations. Built with React, 
 TypeScript, Tailwind CSS, and Supabase.
 
 ================================================================================
-CORE CAPABILITIES
+2. AUTHENTICATION & AUTHORIZATION
 ================================================================================
 
-1. AUTHENTICATION & ACCESS CONTROL
------------------------------------
-- User authentication (login/logout)
-- Role-based access control (Admin, Analyst, Sector Lead)
-- Multi-sector support (Government, Banking, Private, Education, Industrial, 
-  Telecoms, Health, Energy, Transport, Media, ZCHPC)
-- Protected routes and session management
-- Email verification system
+2.1 USER AUTHENTICATION (Supabase Auth)
+---------------------------------------
+- Secure email/password authentication
+- JWT token-based session management
+- Automatic token refresh
+- Secure password hashing (bcrypt via Supabase)
+- Protected route enforcement
+- Automatic session persistence
+- Logout functionality with session invalidation
 
-2. NETWORK TRAFFIC ANALYSIS
----------------------------
+2.2 MULTI-FACTOR AUTHENTICATION (MFA/2FA)
+-----------------------------------------
+Supported via Supabase Auth Settings:
+- Time-based One-Time Password (TOTP)
+- Authenticator app support (Google Authenticator, Authy, etc.)
+- QR code generation for app enrollment
+- Backup recovery codes
+- MFA enforcement per user role
+- 30-second token validity window
+
+To Enable MFA:
+1. Go to Supabase Dashboard > Authentication > Settings
+2. Enable "Multi-factor authentication"
+3. Configure enrollment options
+
+2.3 SINGLE SIGN-ON (SSO) SUPPORT
+--------------------------------
+Configurable via Supabase Auth Providers:
+- Google OAuth 2.0
+- Microsoft Azure AD / Entra ID
+- GitHub
+- GitLab
+- Custom SAML providers
+- OpenID Connect (OIDC)
+
+SSO Configuration Steps:
+1. Obtain Client ID and Secret from identity provider
+2. Configure in Supabase Dashboard > Authentication > Providers
+3. Set authorized redirect URLs
+4. Enable provider in application
+
+2.4 SESSION MANAGEMENT
+----------------------
+- JWT-based stateless sessions
+- Configurable session duration (default: 1 hour)
+- Automatic token refresh before expiry
+- Secure session storage (localStorage)
+- Cross-tab session synchronization
+- Session invalidation on logout
+- Auth state change listeners
+
+2.5 PASSWORD SECURITY
+---------------------
+- Minimum password length enforcement
+- Password strength validation
+- Secure bcrypt hashing (handled by Supabase)
+- Password reset via email
+- Email verification for new accounts
+- Rate limiting on authentication attempts
+
+================================================================================
+3. ROLE-BASED ACCESS CONTROL (RBAC)
+================================================================================
+
+3.1 USER ROLES
+--------------
+┌─────────────┬────────────────────────────────────────────────────────────────┐
+│ Role        │ Description                                                    │
+├─────────────┼────────────────────────────────────────────────────────────────┤
+│ Admin       │ Full system access, user management, system configuration      │
+│ Analyst     │ Security monitoring, alert viewing, basic case management      │
+│ Sector Lead │ Sector-specific management, team oversight, report generation  │
+└─────────────┴────────────────────────────────────────────────────────────────┘
+
+3.2 GRANULAR PERMISSIONS
+------------------------
+Permission Matrix (src/lib/rbacPermissions.ts):
+
+ANALYST PERMISSIONS:
+- view_dashboard         - View main dashboard and metrics
+- view_alerts            - View security alerts
+- create_notes           - Add notes to cases and alerts
+- view_threat_intel      - View threat intelligence data
+- view_vulnerabilities   - View vulnerability scan results
+- view_compliance        - View compliance status
+- view_network           - View network traffic
+- view_endpoints         - View endpoint security status
+- view_dlp               - View DLP events
+- view_reports           - View generated reports
+
+SECTOR LEAD PERMISSIONS (includes Analyst + ):
+- manage_alerts          - Acknowledge, assign, resolve alerts
+- manage_cases           - Create, edit, close investigation cases
+- assign_tasks           - Assign tasks to team members
+- manage_threat_intel    - Add and modify threat indicators
+- manage_vulnerabilities - Initiate scans, manage remediation
+- manage_compliance      - Configure compliance frameworks
+- view_forensics         - View forensic cases and evidence
+- view_iam               - View identity and access data
+- generate_reports       - Create new reports
+- export_data            - Export data from platform
+
+ADMIN PERMISSIONS:
+- all_permissions        - Full unrestricted system access
+- manage_users           - Create, edit, deactivate users
+- configure_system       - Modify system configuration
+- manage_integrations    - Configure security tool integrations
+- manage_forensics       - Full forensic investigation access
+- manage_iam             - Manage user access and permissions
+- manage_network         - Configure network monitoring
+- manage_endpoints       - Manage endpoint policies
+- manage_dlp             - Configure DLP policies
+
+3.3 SECTOR-BASED ACCESS
+-----------------------
+Users are assigned to specific sectors with data isolation:
+- Users can only view data from their assigned sector
+- Admins can view cross-sector data
+- Row Level Security (RLS) enforces sector isolation
+- Sector field required for all data queries
+
+================================================================================
+4. CORE SECURITY MODULES
+================================================================================
+
+4.1 NETWORK TRAFFIC ANALYSIS
+----------------------------
 - Real-time packet inspection
 - Deep packet examination (DPI)
 - Protocol anomaly detection
@@ -31,16 +176,16 @@ CORE CAPABILITIES
 - Geolocation tracking of traffic sources
 - Anomaly scoring and detection
 
-3. SYSTEM HEALTH & PERFORMANCE MONITORING
------------------------------------------
+4.2 SYSTEM HEALTH & PERFORMANCE MONITORING
+------------------------------------------
 - Server uptime/downtime tracking
 - CPU/memory/disk usage monitoring
 - Database performance metrics
 - Application response time tracking
 - Real-time server status indicators
 
-4. ENDPOINT SECURITY MANAGEMENT
--------------------------------
+4.3 ENDPOINT SECURITY MANAGEMENT
+--------------------------------
 - Device inventory and compliance tracking
 - Antivirus/malware status monitoring
 - Patch management tracking
@@ -48,8 +193,8 @@ CORE CAPABILITIES
 - OS type and version tracking
 - Active device monitoring
 
-5. INTRUSION DETECTION SYSTEM (IDS)
------------------------------------
+4.4 INTRUSION DETECTION SYSTEM (IDS)
+------------------------------------
 - Signature-based threat detection
 - Attack pattern recognition
 - Confidence scoring
@@ -57,8 +202,8 @@ CORE CAPABILITIES
 - Source/destination IP tracking
 - Alert severity classification
 
-6. SIEM (Security Information & Event Management)
--------------------------------------------------
+4.5 SIEM (Security Information & Event Management)
+--------------------------------------------------
 - Log aggregation from multiple sources
 - Correlation rule engines
 - Real-time alert generation
@@ -66,8 +211,8 @@ CORE CAPABILITIES
 - Historical event correlation
 - Event indexing and search
 
-7. THREAT INTELLIGENCE INTEGRATION
-----------------------------------
+4.6 THREAT INTELLIGENCE INTEGRATION
+-----------------------------------
 - Global threat feed aggregation
 - Industry-specific intelligence
 - IoC (Indicator of Compromise) database
@@ -76,8 +221,8 @@ CORE CAPABILITIES
 - Threat actor tracking
 - MITRE ATT&CK technique mapping
 
-8. VULNERABILITY MANAGEMENT
----------------------------
+4.7 VULNERABILITY MANAGEMENT
+----------------------------
 - Automated vulnerability scanning
 - CVSS scoring integration
 - Patch prioritization engine
@@ -85,15 +230,15 @@ CORE CAPABILITIES
 - Asset-based vulnerability mapping
 - Nessus/Qualys integration simulation
 
-9. PENETRATION TESTING ORCHESTRATION
-------------------------------------
+4.8 PENETRATION TESTING ORCHESTRATION
+-------------------------------------
 - Pentest result tracking
 - Finding severity classification
 - Target system documentation
 - Tester assignment
 - Report URL management
 
-10. IDENTITY & ACCESS MANAGEMENT (IAM)
+4.9 IDENTITY & ACCESS MANAGEMENT (IAM)
 --------------------------------------
 - Authentication monitoring
 - Multi-factor authentication tracking
@@ -103,8 +248,8 @@ CORE CAPABILITIES
 - Access control management
 - Permission and resource tracking
 
-11. DATA LOSS PREVENTION (DLP)
-------------------------------
+4.10 DATA LOSS PREVENTION (DLP)
+-------------------------------
 - Sensitive data classification
 - Data flow monitoring
 - Policy enforcement mechanisms
@@ -112,7 +257,7 @@ CORE CAPABILITIES
 - Encryption compliance tracking
 - Data blocking capabilities
 
-12. PRIVACY & COMPLIANCE MANAGEMENT
+4.11 PRIVACY & COMPLIANCE MANAGEMENT
 ------------------------------------
 - GDPR compliance tracking
 - Data subject request handling
@@ -121,8 +266,8 @@ CORE CAPABILITIES
 - Retention period monitoring
 - Legal basis documentation
 
-13. FORENSIC ANALYSIS TOOLKIT
------------------------------
+4.12 FORENSIC ANALYSIS TOOLKIT
+------------------------------
 - Case management system
 - Evidence collection tracking
 - Timeline reconstruction
@@ -130,32 +275,32 @@ CORE CAPABILITIES
 - Investigation status management
 - Incident correlation
 
-14. BUSINESS CONTINUITY MONITORING
-----------------------------------
+4.13 BUSINESS CONTINUITY MONITORING
+-----------------------------------
 - Disaster recovery status
 - Backup system health
 - RTO/RPO compliance tracking
 - Failover mechanism status
 - Recovery testing schedules
 
-15. RISK & GOVERNANCE
----------------------
+4.14 RISK & GOVERNANCE
+----------------------
 - Quantitative risk scoring
 - Impact and likelihood assessment
 - Mitigation strategy tracking
 - Residual risk monitoring
 - Risk category classification
 
-16. SECURITY POLICY MANAGEMENT
-------------------------------
+4.15 SECURITY POLICY MANAGEMENT
+-------------------------------
 - Policy version control
 - Policy status tracking
 - Acknowledgment collection
 - Review date management
 - Sector-specific policies
 
-17. TRAINING & AWARENESS
-------------------------
+4.16 TRAINING & AWARENESS
+-------------------------
 - Employee training tracking
 - Certification monitoring
 - Completion rate tracking
@@ -163,39 +308,126 @@ CORE CAPABILITIES
 - Training session scheduling
 
 ================================================================================
-SECURITY TOOL INTEGRATIONS (Simulated)
+5. THREAT INTELLIGENCE ENGINE
 ================================================================================
 
-- Splunk SIEM
-- Qualys Vulnerability Management
-- MISP Threat Intelligence
-- Nessus Vulnerability Scanner
-- Nozomi Networks (OT Security)
+Real-time threat intelligence processing (src/lib/threatIntelligenceEngine.ts):
+
+DATA SOURCES:
+- Splunk SIEM alerts
+- Qualys vulnerability data
+- MISP threat indicators
+- Nessus scan results
+- Nozomi OT security alerts
+
+CAPABILITIES:
+- Alert correlation and deduplication
+- Risk score calculation
+- Confidence scoring per source
+- Threat type classification
+- Recommended action generation
+- Real-time streaming updates
+- MITRE ATT&CK mapping
+- Mean Time to Detect (MTTD) calculation
+- Mean Time to Respond (MTTR) calculation
+- Asset risk ranking
 
 ================================================================================
-DASHBOARD COMPONENTS
+6. DASHBOARD COMPONENTS
 ================================================================================
 
-1. AdminDashboard - Full administrative overview
-2. AnalystDashboard - Security analyst workspace
-3. SectorLeadDashboard - Sector-specific management
-4. NetworkTrafficDashboard - Network monitoring
-5. SystemHealthDashboard - Infrastructure health
-6. EndpointSecurityDashboard - Device management
-7. IDSSIEMDashboard - Intrusion detection & SIEM
-8. VulnerabilityManagementDashboard - Vulnerability tracking
-9. IAMDashboard - Identity management
-10. RiskGovernanceDashboard - Risk assessment
-11. DLPPrivacyDashboard - Data protection
-12. ForensicsDashboard - Digital forensics
-13. ThreatMapDashboard - Geographic threat visualization
+1.  AdminDashboard              - Full administrative overview
+2.  AnalystDashboard            - Security analyst workspace
+3.  SectorLeadDashboard         - Sector-specific management
+4.  NetworkTrafficDashboard     - Network monitoring
+5.  SystemHealthDashboard       - Infrastructure health
+6.  EndpointSecurityDashboard   - Device management
+7.  IDSSIEMDashboard            - Intrusion detection & SIEM
+8.  VulnerabilityManagementDashboard - Vulnerability tracking
+9.  IAMDashboard                - Identity management
+10. RiskGovernanceDashboard     - Risk assessment
+11. DLPPrivacyDashboard         - Data protection
+12. ForensicsDashboard          - Digital forensics
+13. ThreatMapDashboard          - Geographic threat visualization
 14. EnterpriseSecurityDashboard - Threat intelligence platform
-15. ComplianceDashboard - Regulatory compliance
-16. ThreatIntelligence - Threat feed management
-17. SecurityAnalyticsDashboard - Analytics and metrics
+15. ComplianceDashboard         - Regulatory compliance
+16. ThreatIntelligence          - Threat feed management
+17. SecurityAnalyticsDashboard  - Analytics and metrics
 
 ================================================================================
-REAL-TIME FEATURES
+7. SECURITY TOOL INTEGRATIONS (Simulated)
+================================================================================
+
+┌────────────────┬───────────────────────────────────────────────────────────────┐
+│ Tool           │ Integration Capabilities                                      │
+├────────────────┼───────────────────────────────────────────────────────────────┤
+│ Splunk         │ SIEM alerts, log aggregation, correlation, search queries     │
+│ Qualys         │ Vulnerability scanning, asset discovery, CVSS scoring         │
+│ MISP           │ Threat indicators, IoCs, threat actor tracking, campaigns     │
+│ Nessus         │ Vulnerability scans, plugin-based detection, remediation      │
+│ Nozomi         │ OT/ICS security, asset discovery, protocol analysis           │
+└────────────────┴───────────────────────────────────────────────────────────────┘
+
+================================================================================
+8. DATABASE SCHEMA
+================================================================================
+
+USER MANAGEMENT:
+- profiles                    - User profiles and roles
+- user_roles                  - Role assignments (RBAC)
+- email_verification_codes    - Email verification
+
+SECURITY OPERATIONS:
+- incidents                   - Security incidents
+- security_logs               - Event logging
+- ids_alerts                  - Intrusion detection alerts
+- siem_events                 - SIEM event data
+
+THREAT INTELLIGENCE:
+- threat_iocs                 - Indicators of compromise
+- threat_feeds                - Threat intelligence feeds
+- threat_actors               - Threat actor profiles
+- indicators_of_compromise    - IoC database
+- shared_intelligence         - Cross-sector threat sharing
+
+NETWORK & INFRASTRUCTURE:
+- network_traffic             - Network monitoring data
+- system_health               - Server health metrics
+- endpoints                   - Endpoint device inventory
+
+VULNERABILITY & ASSETS:
+- vulnerability_scans         - Vulnerability scan results
+- assets_inventory            - Asset management
+- pentest_results             - Penetration test findings
+
+ACCESS MANAGEMENT:
+- auth_logs                   - Authentication audit logs
+- access_control              - Access permissions
+
+DATA PROTECTION:
+- dlp_events                  - Data loss prevention events
+- personal_data_inventory     - Privacy data catalog
+- data_subject_requests       - GDPR/privacy requests
+
+FORENSICS & COMPLIANCE:
+- forensic_cases              - Digital forensic cases
+- business_continuity         - DR/BC tracking
+- risk_assessments            - Risk management
+- security_policies           - Policy documents
+- compliance_frameworks       - Regulatory compliance
+- training_records            - Training completion
+- training_sessions           - Training scheduling
+
+TOOL INTEGRATIONS:
+- security_tools              - Integration configurations
+- splunk_data                 - Splunk collected data
+- qualys_assets               - Qualys asset data
+- misp_events                 - MISP event data
+- nessus_scans                - Nessus scan data
+- nozomi_alerts               - Nozomi OT alerts
+
+================================================================================
+9. REAL-TIME FEATURES
 ================================================================================
 
 - Live security event streaming
@@ -203,99 +435,110 @@ REAL-TIME FEATURES
 - Automatic risk score calculation
 - Dynamic threat correlation
 - Live dashboard updates
-- WebSocket-like data simulation
+- WebSocket-based data simulation
+- Auto-refresh intervals (configurable)
 
 ================================================================================
-VISUALIZATION & REPORTING
+10. SUPPORTED SECTORS
 ================================================================================
 
-- Interactive charts (Recharts)
-- Risk heat maps
-- Trend analysis
-- Geographic threat maps
-- Severity distribution charts
-- Time-series analysis
-- Exportable reports
+┌────┬─────────────┬─────────────────────────────────────────────────────────────┐
+│ #  │ Sector      │ Description                                                 │
+├────┼─────────────┼─────────────────────────────────────────────────────────────┤
+│ 1  │ Government  │ Government agencies and public sector                       │
+│ 2  │ Banking     │ Financial institutions and banks                            │
+│ 3  │ Private     │ Private sector enterprises                                  │
+│ 4  │ Education   │ Universities, schools, research institutions                │
+│ 5  │ Industrial  │ Manufacturing and industrial facilities                     │
+│ 6  │ Telecoms    │ Telecommunications providers                                 │
+│ 7  │ Health      │ Healthcare organizations and hospitals                      │
+│ 8  │ Energy      │ Power generation and utilities                              │
+│ 9  │ Transport   │ Transportation and logistics                                │
+│ 10 │ Media       │ Media and broadcasting                                      │
+│ 11 │ ZCHPC       │ Zimbabwe Centre for High Performance Computing              │
+└────┴─────────────┴─────────────────────────────────────────────────────────────┘
 
 ================================================================================
-TECHNICAL STACK
+11. TECHNICAL STACK
 ================================================================================
 
-Frontend:
-- React 18
-- TypeScript
-- Tailwind CSS
+FRONTEND:
+- React 18.3
+- TypeScript 5.x
+- Tailwind CSS 3.x
 - Shadcn/UI Components
 - Recharts for visualization
-- React Router for navigation
-- React Query for data fetching
+- React Router 6 for navigation
+- TanStack React Query for data fetching
+- Lucide React for icons
+- Framer Motion (animations)
 
-Backend:
+BACKEND:
 - Supabase (PostgreSQL)
 - Row Level Security (RLS)
-- Edge Functions
+- Edge Functions (Deno)
 - Real-time subscriptions
+- Storage for file uploads
+
+SECURITY:
+- JWT authentication
+- bcrypt password hashing
+- HTTPS enforcement
+- CORS configuration
+- Input validation (Zod)
+- XSS protection
+- CSRF protection
 
 ================================================================================
-DATABASE TABLES
+12. API ENDPOINTS
 ================================================================================
 
-- profiles (user management)
-- incidents (security incidents)
-- security_logs (event logging)
-- network_traffic (network monitoring)
-- system_health (infrastructure health)
-- endpoints (device management)
-- ids_alerts (intrusion detection)
-- siem_events (SIEM data)
-- threat_iocs (indicators of compromise)
-- threat_feeds (threat intelligence)
-- threat_actors (threat actor profiles)
-- indicators_of_compromise (IOC database)
-- vulnerability_scans (vulnerability data)
-- assets_inventory (asset management)
-- pentest_results (penetration testing)
-- auth_logs (authentication logs)
-- access_control (access management)
-- dlp_events (data loss prevention)
-- personal_data_inventory (privacy data)
-- data_subject_requests (GDPR requests)
-- forensic_cases (digital forensics)
-- business_continuity (DR/BC tracking)
-- risk_assessments (risk management)
-- security_policies (policy management)
-- training_records (training tracking)
-- training_sessions (training scheduling)
-- compliance_frameworks (compliance tracking)
-- shared_intelligence (threat sharing)
-- security_tools (tool integrations)
-- splunk_data, qualys_assets, misp_events, nessus_scans, nozomi_alerts
+AUTHENTICATION:
+- POST /auth/signup           - Create new account
+- POST /auth/signin           - Sign in with credentials
+- POST /auth/signout          - Sign out
+- POST /auth/reset-password   - Request password reset
+- POST /auth/verify-email     - Verify email address
+
+EDGE FUNCTIONS:
+- /functions/v1/send-verification-email
+- /functions/v1/verify-email-code
+- /functions/v1/security-tools-collector
 
 ================================================================================
-SECTORS SUPPORTED
+13. DEPLOYMENT & CONFIGURATION
 ================================================================================
 
-1. Government
-2. Banking
-3. Private
-4. Education
-5. Industrial
-6. Telecoms
-7. Health
-8. Energy
-9. Transport
-10. Media
-11. ZCHPC
+ENVIRONMENT SETUP:
+1. Clone repository
+2. Install dependencies: npm install
+3. Configure Supabase connection
+4. Set environment variables
+5. Run development: npm run dev
+6. Build production: npm run build
+
+SUPABASE CONFIGURATION:
+1. Create Supabase project
+2. Run database migrations
+3. Configure RLS policies
+4. Enable authentication providers
+5. Configure email templates
+6. Set up edge functions
+
+SECURITY CONFIGURATION:
+1. Enable MFA in Auth settings
+2. Configure SSO providers
+3. Set password policies
+4. Configure rate limiting
+5. Enable audit logging
 
 ================================================================================
-USER ROLES
+VERSION HISTORY
 ================================================================================
-
-1. Admin - Full system access
-2. Analyst - Security analysis and monitoring
-3. Sector Lead - Sector-specific management
+v1.0.0 - Initial release with core modules
+v1.1.0 - Added threat intelligence engine, RBAC permissions, 
+         MFA/SSO documentation, security tool integrations
 
 ================================================================================
-VERSION: 1.0
 PLATFORM: National Cybersecurity Operations Center (NCOC)
 ================================================================================
