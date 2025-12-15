@@ -23,8 +23,9 @@ import { DLPPrivacyDashboard } from "@/components/DLPPrivacyDashboard";
 import { ForensicsDashboard } from "@/components/ForensicsDashboard";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useRealtimeIncidents, useRealtimeSecurityLogs } from "@/hooks/useSupabaseData";
+import EnterpriseSecurityDashboard from "@/components/EnterpriseSecurityDashboard";
 
-export type SectorType = 'government' | 'banking' | 'private' | 'education' | 'industrial' | 'telecoms' | 'health' | 'energy' | 'transport' | 'media' | 'overview' | 'zchpc' | 'analytics' | 'threat-map' | 'incident-reporting' | 'security-map' | 'security-tools' | 'network-traffic' | 'system-health' | 'endpoint-security' | 'ids-siem' | 'vulnerability-management' | 'iam' | 'risk-governance' | 'dlp-privacy' | 'forensics' | 'business-continuity';
+export type SectorType = 'government' | 'banking' | 'private' | 'education' | 'industrial' | 'telecoms' | 'health' | 'energy' | 'transport' | 'media' | 'overview' | 'zchpc' | 'analytics' | 'threat-map' | 'incident-reporting' | 'security-map' | 'security-tools' | 'network-traffic' | 'system-health' | 'endpoint-security' | 'ids-siem' | 'vulnerability-management' | 'iam' | 'risk-governance' | 'dlp-privacy' | 'forensics' | 'business-continuity' | 'enterprise-tip';
 
 const Index = () => {
   const [activeSector, setActiveSector] = useState<SectorType>('overview');
@@ -69,6 +70,8 @@ const Index = () => {
       case 'forensics':
       case 'business-continuity':
         return <ForensicsDashboard />;
+      case 'enterprise-tip':
+        return <EnterpriseSecurityDashboard />;
       case 'overview':
         return <DataProtectionDashboard />;
       default:
