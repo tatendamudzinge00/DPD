@@ -1,11 +1,16 @@
-
 import React from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Shield, FileText, LogOut, User } from "lucide-react";
+import { Shield, FileText, LogOut, User, Clock, Key } from "lucide-react";
 import { useAuth } from '@/hooks/useAuth';
 import { NotificationsPanel } from './NotificationsPanel';
 import { SettingsDialog } from './SettingsDialog';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface DashboardHeaderProps {
   onShowEnhancedIncidents?: () => void;
@@ -16,7 +21,7 @@ export function DashboardHeader({
   onShowEnhancedIncidents,
   showEnhancedIncidents 
 }: DashboardHeaderProps) {
-  const { profile, signOut } = useAuth();
+  const { profile, session, signOut } = useAuth();
   
   const roleDisplayNames = {
     admin: 'System Administrator',
@@ -27,6 +32,15 @@ export function DashboardHeader({
   const handleSignOut = async () => {
     await signOut();
   };
+
+  // Calculate session info
+  const sessionExpiresAt = session?.expires_at 
+    ? new Date(session.expires_at * 1000).toLocaleTimeString()
+    : null;
+
+  const lastSignIn = session?.user?.last_sign_in_at
+    ? new Date(session.user.last_sign_in_at).toLocaleString()
+    : null;
 
   return (
     <header className="bg-slate-800 border-b border-slate-700 p-4">
@@ -55,10 +69,33 @@ export function DashboardHeader({
           )}
 
           <div className="flex items-center space-x-2">
-            <Badge variant="outline" className="text-slate-300 border-slate-600">
-              <User className="h-3 w-3 mr-1" />
-              {profile && roleDisplayNames[profile.role]}
-            </Badge>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Badge variant="outline" className="text-slate-300 border-slate-600 cursor-help">
+                    <User className="h-3 w-3 mr-1" />
+                    {profile && roleDisplayNames[profile.role]}
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent className="bg-slate-800 border-slate-700">
+                  <div className="space-y-1 text-xs">
+                    <p className="font-medium">{profile?.full_name || profile?.email}</p>
+                    {lastSignIn && (
+                      <p className="text-slate-400">
+                        <Clock className="h-3 w-3 inline mr-1" />
+                        Last login: {lastSignIn}
+                      </p>
+                    )}
+                    {sessionExpiresAt && (
+                      <p className="text-slate-400">
+                        <Key className="h-3 w-3 inline mr-1" />
+                        Session expires: {sessionExpiresAt}
+                      </p>
+                    )}
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             {profile && (
               <Badge variant="outline" className="text-slate-300 border-slate-600">
                 {profile.sector.toUpperCase()}
@@ -69,14 +106,23 @@ export function DashboardHeader({
           <div className="flex items-center space-x-2">
             <NotificationsPanel />
             <SettingsDialog />
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-slate-300"
-              onClick={handleSignOut}
-            >
-              <LogOut className="h-4 w-4" />
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-slate-300 hover:text-white hover:bg-slate-700"
+                    onClick={handleSignOut}
+                  >
+                    <LogOut className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Sign out</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </div>
       </div>
