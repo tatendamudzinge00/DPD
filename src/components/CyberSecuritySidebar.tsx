@@ -30,6 +30,7 @@ const mainNavigation = [
 
 const quickAccessItems = [
   { id: 'overview', icon: LayoutDashboard, label: 'Overview' },
+  { id: 'enterprise-tip', icon: Shield, label: 'Threat Intel Platform' },
   { id: 'analytics', icon: BarChart3, label: 'Analytics' },
   { id: 'threat-map', icon: Map, label: 'Threat Map' },
   { id: 'incident-reporting', icon: AlertTriangle, label: 'Incident Reporting' },
