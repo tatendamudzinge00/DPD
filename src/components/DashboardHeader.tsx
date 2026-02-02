@@ -1,10 +1,11 @@
 import React from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Shield, FileText, LogOut, User, Clock, Key } from "lucide-react";
+import { Shield, FileText, LogOut, User, Clock, Key, Settings } from "lucide-react";
 import { useAuth } from '@/hooks/useAuth';
 import { NotificationsPanel } from './NotificationsPanel';
 import { SettingsDialog } from './SettingsDialog';
+import { useNavigate } from 'react-router-dom';
 import {
   Tooltip,
   TooltipContent,
@@ -22,6 +23,7 @@ export function DashboardHeader({
   showEnhancedIncidents 
 }: DashboardHeaderProps) {
   const { profile, session, signOut } = useAuth();
+  const navigate = useNavigate();
   
   const roleDisplayNames = {
     admin: 'System Administrator',
@@ -72,7 +74,11 @@ export function DashboardHeader({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Badge variant="outline" className="text-slate-300 border-slate-600 cursor-help">
+                  <Badge 
+                    variant="outline" 
+                    className="text-slate-300 border-slate-600 cursor-pointer hover:bg-slate-700"
+                    onClick={() => navigate('/profile')}
+                  >
                     <User className="h-3 w-3 mr-1" />
                     {profile && roleDisplayNames[profile.role]}
                   </Badge>
@@ -92,6 +98,7 @@ export function DashboardHeader({
                         Session expires: {sessionExpiresAt}
                       </p>
                     )}
+                    <p className="text-cyan-400 mt-1">Click to open profile settings</p>
                   </div>
                 </TooltipContent>
               </Tooltip>
@@ -106,6 +113,23 @@ export function DashboardHeader({
           <div className="flex items-center space-x-2">
             <NotificationsPanel />
             <SettingsDialog />
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-slate-300 hover:text-white hover:bg-slate-700"
+                    onClick={() => navigate('/profile')}
+                  >
+                    <Settings className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Profile Settings</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
